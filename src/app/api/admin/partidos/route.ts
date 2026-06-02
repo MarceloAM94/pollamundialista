@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { getAdminUser, getAllPartidos, updatePartido } from "@/lib/admin-service";
+import {
+  getAdminUser,
+  getAllPartidos,
+  updatePartido,
+} from "@/lib/admin-service";
 
 export async function GET() {
   try {
@@ -17,18 +21,22 @@ export async function PUT(request: Request) {
   try {
     await getAdminUser();
     const body = await request.json();
-    const { id, golesLocalReal, golesVisitaReal, estado } = body;
+    const { id, golesLocalReal, golesVisitaReal, penalesLocal, penalesVisita, estado } = body;
 
     if (!id) {
-      return NextResponse.json({ error: "Falta id del partido" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Falta id del partido" },
+        { status: 400 }
+      );
     }
 
-    // Si el partido vuelve a PROGRAMADO, se borra el resultado automáticamente
     const esProgramado = estado === "PROGRAMADO";
 
     const partido = await updatePartido(id, {
       golesLocalReal: esProgramado ? null : golesLocalReal !== undefined ? golesLocalReal : undefined,
       golesVisitaReal: esProgramado ? null : golesVisitaReal !== undefined ? golesVisitaReal : undefined,
+      penalesLocal: esProgramado ? null : penalesLocal !== undefined ? penalesLocal : undefined,
+      penalesVisita: esProgramado ? null : penalesVisita !== undefined ? penalesVisita : undefined,
       estado,
     });
 

@@ -14,7 +14,9 @@ export async function procesarPartido(partidoId: number) {
     throw new Error("El partido debe estar FINALIZADO para procesar");
   }
 
-  const { golesLocalReal, golesVisitaReal } = partido;
+  const { golesLocalReal, golesVisitaReal, penalesLocal, penalesVisita } =
+    partido;
+  const huboPenales = penalesLocal !== null && penalesVisita !== null;
 
   for (const p of partido.pronosticos) {
     if (p.golesLocal === null || p.golesVisita === null) continue;
@@ -22,8 +24,13 @@ export async function procesarPartido(partidoId: number) {
     const puntos = calcularPuntos(
       p.golesLocal,
       p.golesVisita,
+      p.penalesLocal,
+      p.penalesVisita,
       golesLocalReal,
-      golesVisitaReal
+      golesVisitaReal,
+      penalesLocal,
+      penalesVisita,
+      huboPenales
     );
 
     await prisma.pronostico.update({
@@ -43,10 +50,21 @@ export async function procesarPartido(partidoId: number) {
 function calcularPuntos(
   gLocal: number,
   gVisita: number,
+  penLocal: number | null,
+  penVisita: number | null,
   realLocal: number,
-  realVisita: number
+  realVisita: number,
+  penRealLocal: number | null,
+  penRealVisita: number | null,
+  huboPenales: boolean
 ): number {
   const exacto = gLocal === realLocal && gVisita === realVisita;
+
+  if (exacto && huboPenales) {
+    if (penLocal === penRealLocal && penVisita === penRealVisita) return 3;
+    return 0;
+  }
+
   if (exacto) return 3;
 
   const difLocal = gLocal - gVisita;
@@ -56,7 +74,31 @@ function calcularPuntos(
     (difLocal < 0 && difReal < 0) ||
     (difLocal === 0 && difReal === 0);
 
-  if (mismaDiferencia) return 1;
+  if (mismaDiferencia && !huboPenales) return 1;
+
+  const ganadorReal = huboPenales
+    ? penRealLocal! > penRealVisita!
+      ? "local"
+      : "visita"
+    : difReal > 0
+      ? "local"
+      : difReal < 0
+        ? "visita"
+        : null;
+
+  const ganadorUser = difLocal > 0 ? "local" : difLocal < 0 ? "visita" : null;
+
+  if (ganadorReal && ganadorUser === ganadorReal) return 1;
+
+  if (huboPenales && ganadorUser === null) {
+    const ganadorPenUser =
+      penLocal !== null && penVisita !== null
+        ? penLocal > penVisita
+          ? "local"
+          : "visita"
+        : null;
+    if (ganadorPenUser === ganadorReal) return 1;
+  }
 
   return 0;
 }

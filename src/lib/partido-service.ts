@@ -12,25 +12,38 @@ export type PartidoConPronostico = {
   estado: string;
   golesLocalReal: number | null;
   golesVisitaReal: number | null;
+  penalesLocal: number | null;
+  penalesVisita: number | null;
   bloqueado: boolean;
   miPronostico: {
     id: number;
     golesLocal: number | null;
     golesVisita: number | null;
+    penalesLocal: number | null;
+    penalesVisita: number | null;
   } | null;
 };
 
-export async function getPartidosGrupos(
-  userId: number
+export async function getPartidos(
+  userId: number,
+  fase?: number
 ): Promise<PartidoConPronostico[]> {
   const ahora = new Date();
+  const where = fase !== undefined ? { fase } : {};
+
   const partidos = await prisma.partido.findMany({
-    where: { fase: 1 },
-    orderBy: [{ grupo: "asc" }, { fechaHora: "asc" }],
+    where,
+    orderBy: [{ fase: "asc" }, { grupo: "asc" }, { fechaHora: "asc" }],
     include: {
       pronosticos: {
         where: { usuarioId: userId },
-        select: { id: true, golesLocal: true, golesVisita: true },
+        select: {
+          id: true,
+          golesLocal: true,
+          golesVisita: true,
+          penalesLocal: true,
+          penalesVisita: true,
+        },
       },
     },
   });
@@ -51,6 +64,8 @@ export async function getPartidosGrupos(
       estado: p.estado,
       golesLocalReal: p.golesLocalReal,
       golesVisitaReal: p.golesVisitaReal,
+      penalesLocal: p.penalesLocal,
+      penalesVisita: p.penalesVisita,
       bloqueado,
       miPronostico: p.pronosticos[0] ?? null,
     };

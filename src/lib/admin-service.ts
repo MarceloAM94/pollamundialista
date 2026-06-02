@@ -23,12 +23,16 @@ export async function updatePartido(
   data: {
     golesLocalReal?: number | null;
     golesVisitaReal?: number | null;
+    penalesLocal?: number | null;
+    penalesVisita?: number | null;
     estado?: string;
   }
 ) {
   const updateData: Record<string, unknown> = {};
   if (data.golesLocalReal !== undefined) updateData.golesLocalReal = data.golesLocalReal;
   if (data.golesVisitaReal !== undefined) updateData.golesVisitaReal = data.golesVisitaReal;
+  if (data.penalesLocal !== undefined) updateData.penalesLocal = data.penalesLocal;
+  if (data.penalesVisita !== undefined) updateData.penalesVisita = data.penalesVisita;
   if (data.estado) updateData.estado = data.estado;
 
   return prisma.partido.update({

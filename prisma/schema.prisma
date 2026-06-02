@@ -46,6 +46,8 @@ model Partido {
   estado          EstadoPartido  @default(PROGRAMADO)
   golesLocalReal  Int?
   golesVisitaReal Int?
+  penalesLocal    Int?
+  penalesVisita   Int?
   pronosticos     Pronostico[]
 }
 
@@ -55,6 +57,8 @@ model Pronostico {
   partidoId     Int
   golesLocal    Int?
   golesVisita   Int?
+  penalesLocal  Int?
+  penalesVisita Int?
   puntos        Int?     // se llena al procesar: 0, 1 o 3
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

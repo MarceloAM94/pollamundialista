@@ -9,7 +9,7 @@ export async function GET() {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    const partidos = await getPartidos(user.id, 1);
+    const partidos = await getPartidos(user.id, 2);
     return NextResponse.json({ partidos });
   } catch {
     return NextResponse.json(

@@ -15,12 +15,13 @@ type PartidoAdmin = {
   estado: string;
   golesLocalReal: number | null;
   golesVisitaReal: number | null;
+  penalesLocal: number | null;
+  penalesVisita: number | null;
   _count: { pronosticos: number };
 };
 
 type Estadisticas = {
   totalUsuarios: number;
-  totalPronosticos: number;
   totalPartidos: number;
   partidosConResultado: number;
 };
@@ -52,6 +53,10 @@ function formatFecha(iso: string) {
   });
 }
 
+function nn(v: number | null | undefined): string {
+  return v != null ? String(v) : "";
+}
+
 export default function AdminClient() {
   const router = useRouter();
   const [partidos, setPartidos] = useState<PartidoAdmin[]>([]);
@@ -61,9 +66,8 @@ export default function AdminClient() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [filtroFase, setFiltroFase] = useState<number>(1);
-  const [editando, setEditando] = useState<Record<number, Partial<PartidoAdmin>>>({});
+  const [editando, setEditando] = useState<Record<number, Record<string, string>>>({});
   const [saving, setSaving] = useState<Record<number, boolean>>({});
-  const [procesando, setProcesando] = useState<Record<number, boolean>>({});
 
   const cargarDatos = useCallback(async () => {
     try {
@@ -93,7 +97,6 @@ export default function AdminClient() {
       ).length;
       setEstadisticas({
         totalUsuarios: 0,
-        totalPronosticos: 0,
         totalPartidos: total,
         partidosConResultado: conResultado,
       });
@@ -108,32 +111,40 @@ export default function AdminClient() {
     cargarDatos();
   }, [cargarDatos]);
 
-  function valorInput(id: number, campo: "golesLocalReal" | "golesVisitaReal" | "estado") {
-    const partido = partidos.find((p) => p.id === id);
-    if (!partido) return undefined;
+  function editStr(id: number, campo: string): string {
     const edit = editando[id]?.[campo];
-    if (campo === "estado") return (edit ?? partido.estado) as string;
-    return edit !== undefined ? (edit as number | null) : partido[campo as "golesLocalReal" | "golesVisitaReal"];
+    if (edit !== undefined) return edit;
+    const p = partidos.find((x) => x.id === id);
+    if (!p) return "";
+    return nn((p as unknown as Record<string, number | null>)[campo]);
+  }
+
+  function editVal(id: number, campo: string): number | null {
+    const s = editando[id]?.[campo];
+    if (s === undefined || s === "") return null;
+    const n = parseInt(s, 10);
+    return isNaN(n) ? null : n;
   }
 
   async function guardarPartido(id: number) {
-    const partido = partidos.find((p) => p.id === id);
-    if (!partido) return;
-
     setSaving((prev) => ({ ...prev, [id]: true }));
     setError("");
     setSuccess("");
 
     try {
+      const body: Record<string, unknown> = {
+        id,
+        golesLocalReal: editVal(id, "golesLocalReal"),
+        golesVisitaReal: editVal(id, "golesVisitaReal"),
+        penalesLocal: editVal(id, "penalesLocal"),
+        penalesVisita: editVal(id, "penalesVisita"),
+        estado: editStr(id, "estado"),
+      };
+
       const res = await fetch("/api/admin/partidos", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id,
-          golesLocalReal: valorInput(id, "golesLocalReal"),
-          golesVisitaReal: valorInput(id, "golesVisitaReal"),
-          estado: valorInput(id, "estado"),
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -203,10 +214,10 @@ export default function AdminClient() {
 
   const partidosFiltrados = partidos.filter((p) => p.fase === filtroFase);
 
-  function setEditValue(id: number, field: string, value: unknown) {
+  function setEdit(id: number, campo: string, val: string) {
     setEditando((prev) => ({
       ...prev,
-      [id]: { ...prev[id], [field]: value },
+      [id]: { ...prev[id], [campo]: val },
     }));
   }
 
@@ -221,7 +232,6 @@ export default function AdminClient() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-950">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-white">Panel Admin</h1>
           <button
@@ -232,7 +242,6 @@ export default function AdminClient() {
           </button>
         </div>
 
-        {/* Messages */}
         {error && (
           <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
             {error}
@@ -244,7 +253,6 @@ export default function AdminClient() {
           </div>
         )}
 
-        {/* Stats */}
         {estadisticas && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white/10 rounded-xl p-4">
@@ -258,7 +266,6 @@ export default function AdminClient() {
           </div>
         )}
 
-        {/* System State */}
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8">
           <h2 className="text-lg font-bold text-white mb-3">Estado del Sistema</h2>
           <div className="flex flex-wrap gap-2">
@@ -278,7 +285,6 @@ export default function AdminClient() {
           </div>
         </div>
 
-        {/* Match List */}
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
             <button
@@ -315,7 +321,7 @@ export default function AdminClient() {
                   <span className="ml-auto">{p._count.pronosticos} pronósticos</span>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-white font-medium w-32 text-right truncate">
                     {p.equipoLocal}
                   </span>
@@ -326,14 +332,8 @@ export default function AdminClient() {
                       min="0"
                       max="99"
                       placeholder="-"
-                      value={editando[p.id]?.golesLocalReal !== undefined ? (editando[p.id]?.golesLocalReal ?? "") : (p.golesLocalReal ?? "")}
-                      onChange={(e) =>
-                        setEditValue(
-                          p.id,
-                          "golesLocalReal",
-                          e.target.value === "" ? null : parseInt(e.target.value, 10)
-                        )
-                      }
+                      value={editStr(p.id, "golesLocalReal")}
+                      onChange={(e) => setEdit(p.id, "golesLocalReal", e.target.value)}
                       className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                     <span className="text-white font-bold">-</span>
@@ -342,25 +342,44 @@ export default function AdminClient() {
                       min="0"
                       max="99"
                       placeholder="-"
-                      value={editando[p.id]?.golesVisitaReal !== undefined ? (editando[p.id]?.golesVisitaReal ?? "") : (p.golesVisitaReal ?? "")}
-                      onChange={(e) =>
-                        setEditValue(
-                          p.id,
-                          "golesVisitaReal",
-                          e.target.value === "" ? null : parseInt(e.target.value, 10)
-                        )
-                      }
+                      value={editStr(p.id, "golesVisitaReal")}
+                      onChange={(e) => setEdit(p.id, "golesVisitaReal", e.target.value)}
                       className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </div>
+
+                  {p.fase === 2 && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-yellow-300 text-xs">Pen:</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        placeholder="-"
+                        value={editStr(p.id, "penalesLocal")}
+                        onChange={(e) => setEdit(p.id, "penalesLocal", e.target.value)}
+                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                      <span className="text-yellow-300 font-bold text-xs">-</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        placeholder="-"
+                        value={editStr(p.id, "penalesVisita")}
+                        onChange={(e) => setEdit(p.id, "penalesVisita", e.target.value)}
+                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      />
+                    </div>
+                  )}
 
                   <span className="text-white font-medium w-32 truncate">
                     {p.equipoVisita}
                   </span>
 
                   <select
-                    value={editando[p.id]?.estado ?? p.estado}
-                    onChange={(e) => setEditValue(p.id, "estado", e.target.value)}
+                    value={editStr(p.id, "estado")}
+                    onChange={(e) => setEdit(p.id, "estado", e.target.value)}
                     className="bg-white/20 text-white text-xs rounded-lg px-2 py-1.5 border border-white/30 focus:border-green-400 outline-none"
                   >
                     {ESTADOS_PARTIDO.map((est) => (

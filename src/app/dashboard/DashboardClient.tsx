@@ -56,10 +56,10 @@ export default function DashboardClient({ userName, isAdmin, userPuntos }: Props
                 Fase de Grupos
               </div>
             </Link>
-            <Link href="/ranking" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-colors">
+            <Link href="/eliminatorias" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-colors">
               <div className="text-3xl font-bold text-green-400">32</div>
               <div className="text-sm text-green-200 mt-1">
-                Eliminatoria
+                Eliminatorias
               </div>
             </Link>
             <Link href="/ranking" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-colors">
@@ -76,6 +76,12 @@ export default function DashboardClient({ userName, isAdmin, userPuntos }: Props
               className="bg-white text-green-900 px-6 py-3 rounded-lg font-semibold hover:bg-green-100 transition-colors"
             >
               Fase de Grupos
+            </a>
+            <a
+              href="/eliminatorias"
+              className="bg-white text-green-900 px-6 py-3 rounded-lg font-semibold hover:bg-green-100 transition-colors"
+            >
+              Eliminatorias
             </a>
             {isAdmin && (
               <a

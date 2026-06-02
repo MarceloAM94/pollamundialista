@@ -10,11 +10,15 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { partidoId, golesLocal, golesVisita } = body;
+    const { partidoId, golesLocal, golesVisita, penalesLocal, penalesVisita } =
+      body;
 
     if (!partidoId || golesLocal === undefined || golesVisita === undefined) {
       return NextResponse.json(
-        { error: "Faltan campos requeridos (partidoId, golesLocal, golesVisita)" },
+        {
+          error:
+            "Faltan campos requeridos (partidoId, golesLocal, golesVisita)",
+        },
         { status: 400 }
       );
     }
@@ -30,13 +34,22 @@ export async function POST(request: Request) {
       user.id,
       partidoId,
       golesLocal,
-      golesVisita
+      golesVisita,
+      penalesLocal,
+      penalesVisita
     );
 
     return NextResponse.json({ pronostico }, { status: 200 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Error al guardar pronóstico";
-    const status = message.includes("ya no acepta") || message.includes("no encontrado") ? 400 : 500;
+    const message =
+      err instanceof Error ? err.message : "Error al guardar pronóstico";
+    const status =
+      message.includes("ya no acepta") ||
+      message.includes("no encontrado") ||
+      message.includes("Debes") ||
+      message.includes("no pueden")
+        ? 400
+        : 500;
     return NextResponse.json({ error: message }, { status });
   }
 }
