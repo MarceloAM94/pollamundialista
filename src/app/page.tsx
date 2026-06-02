@@ -18,18 +18,18 @@ export default async function Home() {
       style={{
         minHeight: "100dvh",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "column" as const,
         alignItems: "center",
         justifyContent: "center",
         background: "#000",
-        position: "relative",
+        position: "relative" as const,
         overflow: "hidden",
       }}
     >
       {/* ── Fondo animado ── */}
       <div
         className="pointer-events-none"
-        style={{ position: "fixed", inset: 0, overflow: "hidden" }}
+        style={{ position: "fixed" as const, inset: 0, overflow: "hidden" }}
       >
         <div
           className="absolute inset-0"
@@ -44,7 +44,7 @@ export default async function Home() {
         <div
           className="animate-float"
           style={{
-            position: "absolute",
+            position: "absolute" as const,
             top: "-20%",
             right: "-10%",
             width: "60vmax",
@@ -58,7 +58,7 @@ export default async function Home() {
         <div
           className="animate-float-slow"
           style={{
-            position: "absolute",
+            position: "absolute" as const,
             bottom: "-20%",
             left: "-10%",
             width: "70vmax",
@@ -72,7 +72,7 @@ export default async function Home() {
         <div
           className="animate-glow-pulse"
           style={{
-            position: "absolute",
+            position: "absolute" as const,
             top: "50%",
             left: "50%",
             width: "40vmax",
@@ -84,97 +84,42 @@ export default async function Home() {
           }}
         />
 
-        <div
-          className="animate-float"
-          style={{
-            position: "absolute",
-            top: "20%",
-            left: "8%",
-            width: 10,
-            height: 10,
-            borderRadius: "50%",
-            background: "rgba(212,175,55,0.3)",
-            animationDelay: "-4s",
-          }}
-        />
-        <div
-          className="animate-float"
-          style={{
-            position: "absolute",
-            bottom: "30%",
-            right: "12%",
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: "rgba(0,163,224,0.2)",
-            animationDelay: "-9s",
-          }}
-        />
-        <div
-          className="animate-float-slow"
-          style={{
-            position: "absolute",
-            top: "60%",
-            right: "5%",
-            width: 6,
-            height: 6,
-            borderRadius: "50%",
-            background: "rgba(212,175,55,0.25)",
-            animationDelay: "-3s",
-          }}
-        />
-        <div
-          className="animate-float"
-          style={{
-            position: "absolute",
-            bottom: "15%",
-            left: "15%",
-            width: 12,
-            height: 12,
-            borderRadius: "50%",
-            background: "rgba(251,232,78,0.15)",
-            animationDelay: "-7s",
-          }}
-        />
-        <div
-          className="animate-float"
-          style={{
-            position: "absolute",
-            top: "35%",
-            left: "3%",
-            width: 5,
-            height: 5,
-            borderRadius: "50%",
-            background: "rgba(60,172,59,0.2)",
-            animationDelay: "-12s",
-          }}
-        />
-        <div
-          className="animate-float"
-          style={{
-            position: "absolute",
-            bottom: "40%",
-            right: "3%",
-            width: 7,
-            height: 7,
-            borderRadius: "50%",
-            background: "rgba(162,35,142,0.2)",
-            animationDelay: "-6s",
-          }}
-        />
+        {[20, 30, 60, 15, 35, 40].map((top, i) => (
+          <div
+            key={i}
+            className={i % 2 === 0 ? "animate-float" : "animate-float-slow"}
+            style={{
+              position: "absolute" as const,
+              top: `${top}%`,
+              left: `${[8, 12, 5, 15, 3, 3][i]}%`,
+              width: [10, 8, 6, 12, 5, 7][i],
+              height: [10, 8, 6, 12, 5, 7][i],
+              borderRadius: "50%",
+              background: [
+                "rgba(212,175,55,0.3)",
+                "rgba(0,163,224,0.2)",
+                "rgba(212,175,55,0.25)",
+                "rgba(251,232,78,0.15)",
+                "rgba(60,172,59,0.2)",
+                "rgba(162,35,142,0.2)",
+              ][i],
+              animationDelay: `${[-4, -9, -3, -7, -12, -6][i]}s`,
+            }}
+          />
+        ))}
       </div>
 
       {/* ── Contenido ── */}
       <main
         className="animate-fade-in-up"
         style={{
-          position: "relative",
+          position: "relative" as const,
           zIndex: 1,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "column" as const,
           alignItems: "center",
           gap: 24,
-          textAlign: "center",
+          textAlign: "center" as const,
           padding: "0 24px",
         }}
       >
@@ -219,12 +164,13 @@ export default async function Home() {
             display: "flex",
             gap: 16,
             marginTop: 8,
-            flexWrap: "wrap",
+            flexWrap: "wrap" as const,
             justifyContent: "center",
           }}
         >
           <a
             href="/login"
+            className="hover:scale-105"
             style={{
               display: "inline-block",
               padding: "14px 40px",
@@ -236,17 +182,12 @@ export default async function Home() {
               color: "#000",
               transition: "all 0.2s",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.05)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
           >
             Iniciar Sesión
           </a>
           <a
             href="/registro"
+            className="hover:scale-105 hover:bg-white/5"
             style={{
               display: "inline-block",
               padding: "14px 40px",
@@ -258,14 +199,6 @@ export default async function Home() {
               color: "rgba(255,255,255,0.7)",
               transition: "all 0.2s",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-              e.currentTarget.style.transform = "scale(1.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "scale(1)";
-            }}
           >
             Registrarse
           </a>
@@ -275,14 +208,13 @@ export default async function Home() {
       <footer
         className="animate-fade-in"
         style={{
-          position: "fixed",
+          position: "fixed" as const,
           bottom: 24,
           left: 0,
           right: 0,
-          textAlign: "center",
+          textAlign: "center" as const,
           fontSize: 12,
           color: "rgba(255,255,255,0.15)",
-          animationDelay: "0.8s",
         }}
       >
         Solo para fines recreativos entre amigos
