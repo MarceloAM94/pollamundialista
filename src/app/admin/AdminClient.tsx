@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type PartidoAdmin = {
   id: number;
@@ -190,6 +191,7 @@ export default function AdminClient() {
   }
 
   async function cambiarEstadoSistema(estado: string) {
+    if (!confirm(`¿Cambiar estado del sistema a "${estado.replace(/_/g, " ")}"?`)) return;
     setError("");
     setSuccess("");
 
@@ -232,15 +234,7 @@ export default function AdminClient() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-950">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-white">Panel Admin</h1>
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="text-gray-300 hover:text-white transition-colors"
-          >
-            Volver al Dashboard
-          </button>
-        </div>
+        <h1 className="text-3xl font-bold text-white mb-8">Panel Admin</h1>
 
         {error && (
           <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">

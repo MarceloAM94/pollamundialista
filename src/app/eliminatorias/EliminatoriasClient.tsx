@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
 
 type PronosticoData = {
   id: number;
@@ -54,6 +53,7 @@ export default function EliminatoriasClient() {
   const [saved, setSaved] = useState<Record<number, boolean>>({});
   const [values, setValues] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
+  const [saveError, setSaveError] = useState("");
 
   const cargarPartidos = useCallback(async () => {
     try {
@@ -120,7 +120,8 @@ export default function EliminatoriasClient() {
         setSaved((prev) => ({ ...prev, [partidoId]: false }));
       }, 2000);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Error al guardar");
+      setSaveError(err instanceof Error ? err.message : "Error al guardar");
+      setTimeout(() => setSaveError(""), 4000);
     } finally {
       setSaving((prev) => ({ ...prev, [partidoId]: false }));
     }
@@ -137,19 +138,16 @@ export default function EliminatoriasClient() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-950">
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-white">Eliminatorias</h1>
-          <Link
-            href="/dashboard"
-            className="text-green-300 hover:text-white transition-colors"
-          >
-            Volver al Dashboard
-          </Link>
-        </div>
+        <h1 className="text-3xl font-bold text-white mb-8">Eliminatorias</h1>
 
         {error && (
           <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
             {error}
+          </div>
+        )}
+        {saveError && (
+          <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
+            {saveError}
           </div>
         )}
 

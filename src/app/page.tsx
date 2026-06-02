@@ -1,4 +1,18 @@
-export default function Home() {
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/auth";
+
+export default async function Home() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (token) {
+    const payload = await verifyToken(token);
+    if (payload) {
+      redirect("/dashboard");
+    }
+  }
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center min-h-screen bg-gradient-to-br from-green-800 to-green-950">
       <main className="flex flex-col items-center gap-8 text-center px-4">

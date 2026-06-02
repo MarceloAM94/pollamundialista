@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -9,6 +10,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registrado, setRegistrado] = useState(false);
+
+  useEffect(() => {
+    setRegistrado(window.location.search.includes("registrado=1"));
+  }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -43,6 +49,11 @@ export default function LoginPage() {
           Iniciar Sesión
         </h1>
 
+        {registrado && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">
+            Cuenta creada exitosamente. Ahora inicia sesión.
+          </div>
+        )}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
             {error}
@@ -90,9 +101,9 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           ¿No tienes cuenta?{" "}
-          <a href="/registro" className="text-green-700 hover:underline font-medium">
+          <Link href="/registro" className="text-green-700 hover:underline font-medium">
             Regístrate
-          </a>
+          </Link>
         </p>
       </div>
     </div>

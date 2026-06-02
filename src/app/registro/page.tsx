@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function RegistroPage() {
   const router = useRouter();
@@ -106,9 +107,9 @@ export default function RegistroPage() {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           ¿Ya tienes cuenta?{" "}
-          <a href="/login" className="text-green-700 hover:underline font-medium">
+          <Link href="/login" className="text-green-700 hover:underline font-medium">
             Inicia sesión
-          </a>
+          </Link>
         </p>
       </div>
     </div>
