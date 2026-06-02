@@ -43,33 +43,44 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center min-h-screen bg-gradient-to-br from-green-800 to-green-950">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
-        <h1 className="text-3xl font-bold text-green-900 text-center mb-6">
-          Iniciar Sesión
-        </h1>
+    <div className="flex flex-1 items-center justify-center min-h-screen" style={{ background: "#000" }}>
+      <div className="rounded-2xl p-8 w-full max-w-md mx-4 animate-fade-in" style={{ background: "#111217", border: "1px solid rgba(212,175,55,0.15)" }}>
+        <div className="text-center mb-6">
+          <span className="text-4xl">🏆</span>
+          <h1 className="text-2xl font-bold mt-2" style={{ color: "#D4AF37" }}>
+            Iniciar Sesión
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>Polla Mundialista 2026</p>
+        </div>
 
         {registrado && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm">
+          <div className="border px-4 py-3 rounded-lg mb-4 text-sm" style={{ borderColor: "#3CAC3B", color: "#3CAC3B", background: "rgba(60,172,59,0.1)" }}>
             Cuenta creada exitosamente. Ahora inicia sesión.
           </div>
         )}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+          <div className="border px-4 py-3 rounded-lg mb-4 text-sm" style={{ borderColor: "#E61D25", color: "#E61D25", background: "rgba(230,29,37,0.1)" }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>
               Usuario
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg outline-none transition-all duration-200"
+              style={{
+                background: "#000",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "#D4AF37"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
               placeholder="Tu nombre de usuario"
               required
               autoFocus
@@ -77,14 +88,21 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>
               Contraseña
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg outline-none transition-all duration-200"
+              style={{
+                background: "#000",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "#D4AF37"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
               placeholder="Tu contraseña"
               required
             />
@@ -93,15 +111,16 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold text-lg hover:bg-green-800 transition-colors mt-2 disabled:opacity-50"
+            className="w-full py-3 rounded-lg font-semibold text-lg mt-2 transition-all duration-200 disabled:opacity-30 hover:scale-[1.02]"
+            style={{ background: "#D4AF37", color: "#000" }}
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm mt-4" style={{ color: "rgba(255,255,255,0.4)" }}>
           ¿No tienes cuenta?{" "}
-          <Link href="/registro" className="text-green-700 hover:underline font-medium">
+          <Link href="/registro" className="font-medium hover:brightness-150 transition-all" style={{ color: "#D4AF37" }}>
             Regístrate
           </Link>
         </p>

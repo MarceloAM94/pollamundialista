@@ -24,48 +24,51 @@ export default function DashboardClient({ userName, isAdmin, userPuntos }: Props
   const totalEliminatorias = 32;
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+    <div style={{ background: "#000" }}>
       <main className="max-w-6xl mx-auto px-4 py-12">
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/10 shadow-lg shadow-green-900/30">
-          <h2 className="text-3xl font-bold text-white mb-4">
+        <div className="rounded-2xl p-8 text-center border shadow-lg animate-fade-in" style={{ background: "#111217", borderColor: "rgba(212,175,55,0.2)" }}>
+          <h2 className="text-3xl font-bold mb-4" style={{ color: "#D4AF37" }}>
             ¡Bienvenido, {userName}!
           </h2>
-          <p className="text-green-200 text-lg mb-8">
+          <p className="text-lg mb-8" style={{ color: "rgba(255,255,255,0.5)" }}>
             Mundial 2026 · México, Estados Unidos, Canadá
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            <Link href="/fase-grupos" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-all hover:shadow-lg hover:shadow-green-600/20 border border-white/5">
-              <div className="text-3xl font-bold text-green-400">{totalGrupos}</div>
-              <div className="text-sm text-green-200 mt-1">Fase de Grupos</div>
+            <Link href="/fase-grupos" className="rounded-xl p-6 block transition-all duration-200 hover:scale-[1.02]" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="text-3xl font-bold" style={{ color: "#D4AF37" }}>{totalGrupos}</div>
+              <div className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Fase de Grupos</div>
             </Link>
-            <Link href="/eliminatorias" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-all hover:shadow-lg hover:shadow-green-600/20 border border-white/5">
-              <div className="text-3xl font-bold text-green-400">{totalEliminatorias}</div>
-              <div className="text-sm text-green-200 mt-1">Eliminatorias</div>
+            <Link href="/eliminatorias" className="rounded-xl p-6 block transition-all duration-200 hover:scale-[1.02]" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="text-3xl font-bold" style={{ color: "#D4AF37" }}>{totalEliminatorias}</div>
+              <div className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Eliminatorias</div>
             </Link>
-            <Link href="/ranking" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-all hover:shadow-lg hover:shadow-green-600/20 border border-white/5">
-              <div className="text-3xl font-bold text-green-400">{userPuntos}</div>
-              <div className="text-sm text-green-200 mt-1">Tus puntos</div>
+            <Link href="/ranking" className="rounded-xl p-6 block transition-all duration-200 hover:scale-[1.02]" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="text-3xl font-bold" style={{ color: "#D4AF37" }}>{userPuntos}</div>
+              <div className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Tus puntos</div>
             </Link>
           </div>
 
           <div className="mt-8 flex justify-center gap-4 flex-wrap">
             <Link
               href="/fase-grupos"
-              className="bg-white text-green-900 px-6 py-3 rounded-lg font-semibold hover:bg-green-100 transition-all hover:shadow-lg"
+              className="font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105"
+              style={{ background: "#D4AF37", color: "#000" }}
             >
               ⚽ Fase de Grupos
             </Link>
             <Link
               href="/eliminatorias"
-              className="bg-white text-green-900 px-6 py-3 rounded-lg font-semibold hover:bg-green-100 transition-all hover:shadow-lg"
+              className="font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105"
+              style={{ background: "#D4AF37", color: "#000" }}
             >
               🏆 Eliminatorias
             </Link>
             {isAdmin && (
               <Link
                 href="/admin"
-                className="bg-yellow-500 text-yellow-900 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-400 transition-all hover:shadow-lg"
+                className="font-semibold px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105"
+                style={{ background: "#E61D25", color: "#fff" }}
               >
                 ⚙️ Panel Admin
               </Link>

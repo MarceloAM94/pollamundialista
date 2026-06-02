@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import CountryFlag from "@/app/components/CountryFlag";
 import Skeleton from "@/app/components/Skeleton";
+import { getColorGrupo, getColorRonda } from "@/app/lib/colores";
 
 type PartidoAdmin = {
   id: number;
@@ -55,10 +56,10 @@ function nn(v: number | null | undefined): string {
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+    <div style={{ background: "#000" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Skeleton className="h-9 w-48 mb-8" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-8">
           {Array.from({ length: 2 }).map((_, i) => (
             <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
@@ -226,47 +227,55 @@ export default function AdminClient() {
     }));
   }
 
+  function getColorPartido(p: PartidoAdmin): string {
+    if (p.grupo) return getColorGrupo(p.grupo);
+    return getColorRonda(p.ronda);
+  }
+
   if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+    <div style={{ background: "#000" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Panel Admin</h1>
+        <h1 className="text-3xl font-bold mb-8" style={{ color: "#D4AF37" }}>
+          Panel Admin
+        </h1>
 
         {error && (
-          <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
+          <div className="border px-4 py-3 rounded-lg mb-6 text-sm" style={{ borderColor: "#E61D25", color: "#E61D25", background: "rgba(230,29,37,0.1)" }}>
             {error}
           </div>
         )}
         {success && (
-          <div className="bg-green-500/20 border border-green-400 text-green-200 px-4 py-3 rounded-lg mb-6">
+          <div className="border px-4 py-3 rounded-lg mb-6 text-sm" style={{ borderColor: "#3CAC3B", color: "#3CAC3B", background: "rgba(60,172,59,0.1)" }}>
             {success}
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-            <div className="text-2xl font-bold text-white">{totalPartidos}</div>
-            <div className="text-sm text-green-300">Partidos totales</div>
+          <div className="rounded-xl p-4" style={{ background: "#111217", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="text-2xl font-bold" style={{ color: "#D4AF37" }}>{totalPartidos}</div>
+            <div className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>Partidos totales</div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-            <div className="text-2xl font-bold text-green-400">{conResultado}</div>
-            <div className="text-sm text-green-300">Con resultado</div>
+          <div className="rounded-xl p-4" style={{ background: "#111217", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="text-2xl font-bold" style={{ color: "#3CAC3B" }}>{conResultado}</div>
+            <div className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>Con resultado</div>
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/10 shadow-lg shadow-green-900/30">
-          <h2 className="text-lg font-bold text-white mb-3">Estado del Sistema</h2>
+        <div className="rounded-2xl p-6 mb-8 shadow-lg" style={{ background: "#111217", border: "1px solid rgba(212,175,55,0.15)" }}>
+          <h2 className="text-lg font-bold mb-3" style={{ color: "#D4AF37" }}>Estado del Sistema</h2>
           <div className="flex flex-wrap gap-2">
             {ESTADOS_SISTEMA.map((estado) => (
               <button
                 key={estado}
                 onClick={() => cambiarEstadoSistema(estado)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   estadoSistema === estado
-                    ? "bg-green-600 text-white shadow-lg shadow-green-600/30"
-                    : "bg-white/10 text-gray-300 hover:bg-white/20"
+                    ? "text-black font-semibold"
+                    : "hover:bg-white/10"
                 }`}
+                style={estadoSistema === estado ? { background: "#D4AF37", color: "#000" } : { color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.05)" }}
               >
                 {estado.replace(/_/g, " ")}
               </button>
@@ -274,130 +283,153 @@ export default function AdminClient() {
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-green-900/30">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-green-800/50 to-green-900/50">
+        <div className="rounded-2xl overflow-hidden shadow-lg animate-fade-in" style={{ background: "#111217", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(0,0,0,0.3)" }}>
             <button
               onClick={() => setFiltroFase(1)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                filtroFase === 1
-                  ? "bg-green-600 text-white shadow-lg shadow-green-600/30"
-                  : "text-gray-300 hover:bg-white/10"
-              }`}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+              style={filtroFase === 1 ? { background: "#D4AF37", color: "#000" } : { color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.05)" }}
             >
               Fase de Grupos
             </button>
             <button
               onClick={() => setFiltroFase(2)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                filtroFase === 2
-                  ? "bg-green-600 text-white shadow-lg shadow-green-600/30"
-                  : "text-gray-300 hover:bg-white/10"
-              }`}
+              className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+              style={filtroFase === 2 ? { background: "#D4AF37", color: "#000" } : { color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.05)" }}
             >
               Eliminatoria
             </button>
           </div>
 
-          <div className="divide-y divide-white/10">
-            {partidosFiltrados.map((p) => (
-              <div key={p.id} className="px-4 py-3 transition-colors hover:bg-white/5">
-                <div className="flex items-center gap-2 text-xs text-gray-400 mb-1">
-                  <span>#{p.id}</span>
-                  {p.grupo && <span>Grupo {p.grupo}</span>}
-                  <span>{p.ronda}</span>
-                  <span>{formatFecha(p.fechaHora)}</span>
-                  {p.estadio && <span className="truncate">{p.estadio}</span>}
-                  <span className="ml-auto">{p._count.pronosticos} pronósticos</span>
-                </div>
-
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-white font-medium w-28 text-right truncate flex items-center justify-end gap-1">
-                    <CountryFlag nombre={p.equipoLocal} />
-                    {p.equipoLocal}
-                  </span>
-
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      min="0"
-                      max="99"
-                      placeholder="-"
-                      value={editStr(p.id, "golesLocalReal")}
-                      onChange={(e) => setEdit(p.id, "golesLocalReal", e.target.value)}
-                      className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                    />
-                    <span className="text-white font-bold">-</span>
-                    <input
-                      type="number"
-                      min="0"
-                      max="99"
-                      placeholder="-"
-                      value={editStr(p.id, "golesVisitaReal")}
-                      onChange={(e) => setEdit(p.id, "golesVisitaReal", e.target.value)}
-                      className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                    />
+          <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+            {partidosFiltrados.map((p) => {
+              const color = getColorPartido(p);
+              return (
+                <div key={p.id} className="px-4 py-3 transition-colors hover:bg-white/[0.02]" style={{ borderLeft: `3px solid ${color}` }}>
+                  <div className="flex items-center gap-2 text-xs mb-1" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    <span>#{p.id}</span>
+                    {p.grupo && <span>Grupo {p.grupo}</span>}
+                    <span>{p.ronda}</span>
+                    <span>{formatFecha(p.fechaHora)}</span>
+                    {p.estadio && <span className="truncate">{p.estadio}</span>}
+                    <span className="ml-auto">{p._count.pronosticos} pronósticos</span>
                   </div>
 
-                  <CountryFlag nombre={p.equipoVisita} />
-                  <span className="text-white font-medium w-28 truncate">
-                    {p.equipoVisita}
-                  </span>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="font-medium w-28 text-right truncate flex items-center justify-end gap-1 text-sm" style={{ color: "#fff" }}>
+                      <CountryFlag nombre={p.equipoLocal} />
+                      {p.equipoLocal}
+                    </span>
 
-                  {p.fase === 2 && (
                     <div className="flex items-center gap-1">
-                      <span className="text-yellow-300 text-xs">Pen:</span>
                       <input
                         type="number"
                         min="0"
                         max="99"
                         placeholder="-"
-                        value={editStr(p.id, "penalesLocal")}
-                        onChange={(e) => setEdit(p.id, "penalesLocal", e.target.value)}
-                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        value={editStr(p.id, "golesLocalReal")}
+                        onChange={(e) => setEdit(p.id, "golesLocalReal", e.target.value)}
+                        className="w-12 h-9 text-center font-bold outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        style={{
+                          background: "#000",
+                          color: "#fff",
+                          border: "1px solid rgba(255,255,255,0.15)",
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = color}
+                        onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
                       />
-                      <span className="text-yellow-300 font-bold text-xs">-</span>
+                      <span className="font-bold" style={{ color }}>-</span>
                       <input
                         type="number"
                         min="0"
                         max="99"
                         placeholder="-"
-                        value={editStr(p.id, "penalesVisita")}
-                        onChange={(e) => setEdit(p.id, "penalesVisita", e.target.value)}
-                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        value={editStr(p.id, "golesVisitaReal")}
+                        onChange={(e) => setEdit(p.id, "golesVisitaReal", e.target.value)}
+                        className="w-12 h-9 text-center font-bold outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        style={{
+                          background: "#000",
+                          color: "#fff",
+                          border: "1px solid rgba(255,255,255,0.15)",
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = color}
+                        onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
                       />
                     </div>
-                  )}
 
-                  <select
-                    value={editStr(p.id, "estado")}
-                    onChange={(e) => setEdit(p.id, "estado", e.target.value)}
-                    className="bg-white/20 text-white text-xs rounded-lg px-2 py-1.5 border border-white/30 focus:border-green-400 outline-none"
-                  >
-                    {ESTADOS_PARTIDO.map((est) => (
-                      <option key={est} value={est} className="bg-gray-800">
-                        {est}
-                      </option>
-                    ))}
-                  </select>
+                    <CountryFlag nombre={p.equipoVisita} />
+                    <span className="font-medium w-28 truncate text-sm" style={{ color: "#fff" }}>
+                      {p.equipoVisita}
+                    </span>
 
-                  {p.estado === "FINALIZADO" && (
-                    <button
-                      onClick={() => procesar(p.id)}
-                      className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-blue-600/30"
+                    {p.fase === 2 && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs" style={{ color }}>Pen:</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="99"
+                          placeholder="-"
+                          value={editStr(p.id, "penalesLocal")}
+                          onChange={(e) => setEdit(p.id, "penalesLocal", e.target.value)}
+                          className="w-10 h-8 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          style={{
+                            background: "#000",
+                            color,
+                            border: "1px solid rgba(255,255,255,0.15)",
+                          }}
+                        />
+                        <span className="font-bold text-xs" style={{ color }}>-</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="99"
+                          placeholder="-"
+                          value={editStr(p.id, "penalesVisita")}
+                          onChange={(e) => setEdit(p.id, "penalesVisita", e.target.value)}
+                          className="w-10 h-8 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          style={{
+                            background: "#000",
+                            color,
+                            border: "1px solid rgba(255,255,255,0.15)",
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    <select
+                      value={editStr(p.id, "estado")}
+                      onChange={(e) => setEdit(p.id, "estado", e.target.value)}
+                      className="text-xs rounded-lg px-2 py-1.5 outline-none"
+                      style={{ background: "rgba(255,255,255,0.05)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }}
                     >
-                      Procesar
+                      {ESTADOS_PARTIDO.map((est) => (
+                        <option key={est} value={est} style={{ background: "#111217" }}>
+                          {est}
+                        </option>
+                      ))}
+                    </select>
+
+                    {p.estado === "FINALIZADO" && (
+                      <button
+                        onClick={() => procesar(p.id)}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200" style={{ background: "#00A3E0", color: "#000" }}
+                      >
+                        Procesar
+                      </button>
+                    )}
+                    <button
+                      onClick={() => guardarPartido(p.id)}
+                      disabled={saving[p.id]}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 disabled:opacity-30"
+                      style={{ background: "#D4AF37", color: "#000" }}
+                    >
+                      {saving[p.id] ? "..." : "Guardar"}
                     </button>
-                  )}
-                  <button
-                    onClick={() => guardarPartido(p.id)}
-                    disabled={saving[p.id]}
-                    className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-3 py-1.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-green-600/30"
-                  >
-                    {saving[p.id] ? "..." : "Guardar"}
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

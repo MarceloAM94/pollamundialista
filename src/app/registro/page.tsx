@@ -38,28 +38,39 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center min-h-screen bg-gradient-to-br from-green-800 to-green-950">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
-        <h1 className="text-3xl font-bold text-green-900 text-center mb-6">
-          Registrarse
-        </h1>
+    <div className="flex flex-1 items-center justify-center min-h-screen" style={{ background: "#000" }}>
+      <div className="rounded-2xl p-8 w-full max-w-md mx-4 animate-fade-in" style={{ background: "#111217", border: "1px solid rgba(212,175,55,0.15)" }}>
+        <div className="text-center mb-6">
+          <span className="text-4xl">🏆</span>
+          <h1 className="text-2xl font-bold mt-2" style={{ color: "#D4AF37" }}>
+            Registrarse
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>Crea tu cuenta para la Polla Mundialista 2026</p>
+        </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+          <div className="border px-4 py-3 rounded-lg mb-4 text-sm" style={{ borderColor: "#E61D25", color: "#E61D25", background: "rgba(230,29,37,0.1)" }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>
               Nombre
             </label>
             <input
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg outline-none transition-all duration-200"
+              style={{
+                background: "#000",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "#D4AF37"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
               placeholder="Tu nombre real"
               required
               autoFocus
@@ -67,14 +78,21 @@ export default function RegistroPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>
               Usuario
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg outline-none transition-all duration-200"
+              style={{
+                background: "#000",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "#D4AF37"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
               placeholder="Elige un nombre de usuario"
               required
               minLength={3}
@@ -82,14 +100,21 @@ export default function RegistroPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>
               Contraseña
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all"
+              className="w-full px-4 py-3 rounded-lg outline-none transition-all duration-200"
+              style={{
+                background: "#000",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+              onFocus={(e) => e.target.style.borderColor = "#D4AF37"}
+              onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
               placeholder="Elige una contraseña"
               required
               minLength={4}
@@ -99,15 +124,16 @@ export default function RegistroPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold text-lg hover:bg-green-800 transition-colors mt-2 disabled:opacity-50"
+            className="w-full py-3 rounded-lg font-semibold text-lg mt-2 transition-all duration-200 disabled:opacity-30 hover:scale-[1.02]"
+            style={{ background: "#D4AF37", color: "#000" }}
           >
             {loading ? "Creando cuenta..." : "Crear Cuenta"}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-sm mt-4" style={{ color: "rgba(255,255,255,0.4)" }}>
           ¿Ya tienes cuenta?{" "}
-          <Link href="/login" className="text-green-700 hover:underline font-medium">
+          <Link href="/login" className="font-medium hover:brightness-150 transition-all" style={{ color: "#D4AF37" }}>
             Inicia sesión
           </Link>
         </p>

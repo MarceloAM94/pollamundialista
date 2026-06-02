@@ -16,12 +16,12 @@ type RankingEntry = {
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+    <div style={{ background: "#000" }}>
       <div className="max-w-3xl mx-auto px-4 py-8">
         <Skeleton className="h-9 w-48 mb-8" />
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
+        <div className="rounded-2xl overflow-hidden" style={{ background: "#111217" }}>
           <Skeleton className="h-10 rounded-none" />
-          <div className="divide-y divide-white/10">
+          <div className="divide-y divide-white/5">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="flex items-center gap-2 px-4 py-3">
                 <Skeleton className="h-5 w-5 shrink-0" />
@@ -69,18 +69,20 @@ export default function RankingClient() {
   if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+    <div style={{ background: "#000" }}>
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Ranking</h1>
+        <h1 className="text-3xl font-bold mb-8" style={{ color: "#D4AF37" }}>
+          Ranking
+        </h1>
 
         {error && (
-          <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
+          <div className="border px-4 py-3 rounded-lg mb-6 text-sm" style={{ borderColor: "#E61D25", color: "#E61D25", background: "rgba(230,29,37,0.1)" }}>
             {error}
           </div>
         )}
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-green-900/30">
-          <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-white/10 text-xs text-green-300 font-semibold uppercase tracking-wider bg-gradient-to-r from-green-800/50 to-green-900/50">
+        <div className="rounded-2xl overflow-hidden shadow-lg animate-fade-in" style={{ background: "#111217", border: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="grid grid-cols-12 gap-2 px-4 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: "#D4AF37", borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(0,0,0,0.3)" }}>
             <div className="col-span-1 text-center">#</div>
             <div className="col-span-5">Nombre</div>
             <div className="col-span-2 text-center">Pts</div>
@@ -88,41 +90,42 @@ export default function RankingClient() {
             <div className="col-span-2 text-center" title="Diferencias correctas (1 pt)">1</div>
           </div>
 
-          <div className="divide-y divide-white/10">
+          <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
             {ranking.map((entry) => {
               const esYo = entry.usuarioId === userId;
               return (
                 <div
                   key={entry.usuarioId}
                   className={`grid grid-cols-12 gap-2 px-4 py-3 items-center transition-colors ${
-                    esYo
-                      ? "bg-green-600/20 hover:bg-green-600/25"
-                      : "hover:bg-white/5"
+                    esYo ? "bg-[rgba(212,175,55,0.08)]" : "hover:bg-white/[0.02]"
                   }`}
+                  style={esYo ? { borderLeft: "3px solid #D4AF37" } : {}}
                 >
                   <div className="col-span-1 text-center">
-                    {entry.posicion <= 3 ? (
-                      <span className="text-lg">
-                        {entry.posicion === 1 ? "🥇" : entry.posicion === 2 ? "🥈" : "🥉"}
-                      </span>
+                    {entry.posicion === 1 ? (
+                      <span className="text-lg" style={{ filter: "drop-shadow(0 0 6px rgba(212,175,55,0.5))" }}>🥇</span>
+                    ) : entry.posicion === 2 ? (
+                      <span className="text-lg">🥈</span>
+                    ) : entry.posicion === 3 ? (
+                      <span className="text-lg">🥉</span>
                     ) : (
-                      <span className="text-gray-400 text-sm">{entry.posicion}</span>
+                      <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>{entry.posicion}</span>
                     )}
                   </div>
                   <div className="col-span-5">
-                    <div className="text-white font-medium text-sm truncate">
+                    <div className="font-medium text-sm truncate" style={{ color: "#fff" }}>
                       {entry.nombre}
-                      {esYo && <span className="text-green-300 text-xs ml-1">(tú)</span>}
+                      {esYo && <span className="text-xs ml-1" style={{ color: "#D4AF37" }}>(tú)</span>}
                     </div>
-                    <div className="text-green-300 text-xs">@{entry.username}</div>
+                    <div className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>@{entry.username}</div>
                   </div>
                   <div className="col-span-2 text-center">
-                    <span className="text-white font-bold text-lg">{entry.puntos}</span>
+                    <span className="font-bold text-lg" style={{ color: "#D4AF37" }}>{entry.puntos}</span>
                   </div>
-                  <div className="col-span-2 text-center text-green-400">
+                  <div className="col-span-2 text-center" style={{ color: "#3CAC3B" }}>
                     {entry.exactos}
                   </div>
-                  <div className="col-span-2 text-center text-yellow-400">
+                  <div className="col-span-2 text-center" style={{ color: "#FBE84E" }}>
                     {entry.diferencias}
                   </div>
                 </div>
@@ -132,9 +135,9 @@ export default function RankingClient() {
         </div>
 
         {misPuntos !== null && (
-          <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/10">
-            <p className="text-green-200 text-sm">
-              Tus puntos: <span className="text-white font-bold text-lg">{misPuntos}</span>
+          <div className="mt-6 rounded-2xl p-4 text-center animate-fade-in" style={{ background: "#111217", border: "1px solid rgba(212,175,55,0.2)" }}>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+              Tus puntos: <span className="font-bold text-lg" style={{ color: "#D4AF37" }}>{misPuntos}</span>
             </p>
           </div>
         )}

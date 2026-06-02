@@ -47,15 +47,20 @@ export default function NavBar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 backdrop-blur-md border-b border-white/10 shadow-lg shadow-green-900/30"
-      style={{ background: "var(--color-green-900)" }}
+      className="sticky top-0 z-50 shadow-lg"
+      style={{
+        background: "linear-gradient(135deg, #000000 0%, #111217 100%)",
+        borderBottom: "1px solid rgba(212,175,55,0.15)",
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link
           href="/dashboard"
-          className="text-white font-bold text-base tracking-tight flex items-center gap-1"
+          className="font-bold tracking-tight flex items-center gap-2 transition-all duration-200 hover:scale-[1.02]"
+          style={{ color: "#D4AF37" }}
         >
-          🏆 Polla Mundialista
+          <span className="text-lg">🏆</span>
+          <span>Polla Mundialista</span>
         </Link>
 
         <div className="flex items-center gap-1 overflow-x-auto">
@@ -65,23 +70,37 @@ export default function NavBar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                className="px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200"
+                style={
                   active
-                    ? "bg-green-700 text-white shadow-lg shadow-green-700/30"
-                    : "text-green-200 hover:text-white hover:bg-white/10"
-                }`}
+                    ? { background: "rgba(212,175,55,0.15)", color: "#D4AF37" }
+                    : { color: "rgba(255,255,255,0.5)", background: "transparent" }
+                }
+                onMouseEnter={(e) => {
+                  if (!active) e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) e.currentTarget.style.background = "transparent";
+                }}
               >
                 {link.label}
               </Link>
             );
           })}
-          <div className="flex items-center gap-2 ml-1 pl-2 border-l border-white/10">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-green-700/30">
+          <div className="flex items-center gap-2 ml-1 pl-2" style={{ borderLeft: "1px solid rgba(255,255,255,0.1)" }}>
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #D4AF37, #F3CD5F)",
+                color: "#000",
+              }}
+            >
               {user.nombre.charAt(0).toUpperCase()}
             </div>
             <button
               onClick={handleLogout}
-              className="text-xs text-green-300 hover:text-white transition-colors whitespace-nowrap"
+              className="text-xs transition-colors whitespace-nowrap hover:brightness-150"
+              style={{ color: "rgba(255,255,255,0.4)" }}
             >
               {user.nombre}
             </button>

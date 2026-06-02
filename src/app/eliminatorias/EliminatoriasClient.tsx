@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import CountryFlag from "@/app/components/CountryFlag";
 import Skeleton from "@/app/components/Skeleton";
+import { getColorRonda } from "@/app/lib/colores";
 
 type PronosticoData = {
   id: number;
@@ -29,6 +30,7 @@ type PartidoData = {
 };
 
 const RONDAS = [
+  { key: "dieciseisavos", label: "Dieciseisavos" },
   { key: "octavos", label: "Octavos" },
   { key: "cuartos", label: "Cuartos" },
   { key: "semifinal", label: "Semifinal" },
@@ -50,14 +52,14 @@ function formatFecha(iso: string) {
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+    <div style={{ background: "#000" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Skeleton className="h-9 w-64 mb-8" />
         <div className="flex gap-4 overflow-x-auto pb-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden min-w-[280px]">
+            <div key={i} className="rounded-2xl overflow-hidden min-w-[280px]" style={{ background: "#111217" }}>
               <Skeleton className="h-12 rounded-none" />
-              <div className="divide-y divide-white/10">
+              <div className="divide-y divide-white/5">
                 {Array.from({ length: i < 2 ? 4 : 2 }).map((_, j) => (
                   <div key={j} className="p-4">
                     <Skeleton className="h-3 w-28 mb-2" />
@@ -161,17 +163,19 @@ export default function EliminatoriasClient() {
   if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+    <div style={{ background: "#000" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-8">Eliminatorias</h1>
+        <h1 className="text-3xl font-bold mb-8" style={{ color: "#D4AF37" }}>
+          Eliminatorias
+        </h1>
 
         {error && (
-          <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
+          <div className="border px-4 py-3 rounded-lg mb-6 text-sm" style={{ borderColor: "#E61D25", color: "#E61D25", background: "rgba(230,29,37,0.1)" }}>
             {error}
           </div>
         )}
         {saveError && (
-          <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
+          <div className="border px-4 py-3 rounded-lg mb-6 text-sm" style={{ borderColor: "#E61D25", color: "#E61D25", background: "rgba(230,29,37,0.1)" }}>
             {saveError}
           </div>
         )}
@@ -180,43 +184,48 @@ export default function EliminatoriasClient() {
           {RONDAS.map(({ key, label }, idx) => {
             const ps = partidos.filter((p) => p.ronda === key);
             if (ps.length === 0) return null;
+            const color = getColorRonda(key);
 
             return (
-              <div
-                key={key}
-                className="flex-1 min-w-[280px] md:min-w-0"
-              >
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-green-900/30">
-                  <div className="bg-gradient-to-r from-green-700/80 to-green-800/80 px-4 py-3">
-                    <h2 className="text-lg font-bold text-white text-center">{label}</h2>
+              <div key={key} className="flex-1 min-w-[280px] md:min-w-0 animate-fade-in" style={{ animationDelay: `${idx * 0.08}s` }}>
+                <div
+                  className="rounded-2xl overflow-hidden shadow-lg"
+                  style={{
+                    background: "#111217",
+                    borderLeft: `4px solid ${color}`,
+                  }}
+                >
+                  <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                    <h2 className="text-lg font-bold" style={{ color }}>
+                      {label}
+                    </h2>
                   </div>
 
-                  <div className="divide-y divide-white/10">
+                  <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
                     {ps.map((p, matchIdx) => (
                       <div
                         key={p.id}
-                        className="px-3 py-3 transition-colors hover:bg-white/5"
+                        className="px-3 py-3 transition-colors hover:bg-white/[0.02]"
                       >
                         <div className="flex items-center justify-between gap-1 mb-2">
-                          <span className="text-green-300 text-xs flex items-center gap-1">
-                            <span>📅</span> {formatFecha(p.fechaHora)}
+                          <span className="text-xs flex items-center gap-1" style={{ color: "rgba(255,255,255,0.4)" }}>
+                            📅 {formatFecha(p.fechaHora)}
                           </span>
                           {p.estadio && (
-                            <span className="text-green-400 text-xs flex items-center gap-1">
-                              <span>🏟️</span>
-                              <span className="truncate max-w-[100px]">{p.estadio}</span>
+                            <span className="text-xs flex items-center gap-1" style={{ color: "rgba(255,255,255,0.4)" }}>
+                              🏟️ {p.estadio}
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-center gap-1.5">
-                          <span className="text-white font-medium flex-1 text-right text-sm flex items-center justify-end gap-1">
+                          <span className="font-medium flex-1 text-right text-sm flex items-center justify-end gap-1" style={{ color: "#fff" }}>
                             {p.equipoLocal}
                             <CountryFlag nombre={p.equipoLocal} />
                           </span>
 
                           {p.bloqueado ? (
-                            <span className="text-gray-400 text-xs px-1 whitespace-nowrap font-bold">
+                            <span className="text-xs px-1 whitespace-nowrap font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
                               {p.miPronostico
                                 ? `${p.miPronostico.golesLocal}-${p.miPronostico.golesVisita}${p.miPronostico.penalesLocal !== null ? ` (${p.miPronostico.penalesLocal}-${p.miPronostico.penalesVisita})` : ""}`
                                 : "vs"}
@@ -235,9 +244,16 @@ export default function EliminatoriasClient() {
                                     [`${p.id}-local`]: e.target.value,
                                   }))
                                 }
-                                className="w-10 h-9 text-center rounded-lg bg-white/20 text-white font-bold text-base border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                className="w-10 h-9 text-center font-bold text-sm outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                style={{
+                                  background: "#000",
+                                  color: "#fff",
+                                  border: "1px solid rgba(255,255,255,0.15)",
+                                }}
+                                onFocus={(e) => e.target.style.borderColor = color}
+                                onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
                               />
-                              <span className="text-white font-bold text-sm">-</span>
+                              <span className="font-bold text-sm" style={{ color }}>-</span>
                               <input
                                 type="number"
                                 min="0"
@@ -250,12 +266,19 @@ export default function EliminatoriasClient() {
                                     [`${p.id}-visita`]: e.target.value,
                                   }))
                                 }
-                                className="w-10 h-9 text-center rounded-lg bg-white/20 text-white font-bold text-base border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                className="w-10 h-9 text-center font-bold text-sm outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                style={{
+                                  background: "#000",
+                                  color: "#fff",
+                                  border: "1px solid rgba(255,255,255,0.15)",
+                                }}
+                                onFocus={(e) => e.target.style.borderColor = color}
+                                onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
                               />
                             </div>
                           )}
 
-                          <span className="text-white font-medium flex-1 text-sm flex items-center gap-1">
+                          <span className="font-medium flex-1 text-sm flex items-center gap-1" style={{ color: "#fff" }}>
                             <CountryFlag nombre={p.equipoVisita} />
                             {p.equipoVisita}
                           </span>
@@ -264,7 +287,7 @@ export default function EliminatoriasClient() {
                         {!p.bloqueado && (
                           <>
                             <div className="flex items-center justify-center gap-2 mt-2">
-                              <span className="text-yellow-300 text-xs">Penales:</span>
+                              <span className="text-xs" style={{ color: color }}>Penales:</span>
                               <input
                                 type="number"
                                 min="0"
@@ -278,9 +301,14 @@ export default function EliminatoriasClient() {
                                     [`${p.id}-pen-local`]: e.target.value,
                                   }))
                                 }
-                                className="w-9 h-7 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                className="w-9 h-7 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                style={{
+                                  background: "#000",
+                                  color,
+                                  border: "1px solid rgba(255,255,255,0.15)",
+                                }}
                               />
-                              <span className="text-yellow-300 font-bold text-xs">-</span>
+                              <span className="font-bold text-xs" style={{ color }}>-</span>
                               <input
                                 type="number"
                                 min="0"
@@ -294,18 +322,27 @@ export default function EliminatoriasClient() {
                                     [`${p.id}-pen-visita`]: e.target.value,
                                   }))
                                 }
-                                className="w-9 h-7 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                className="w-9 h-7 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                style={{
+                                  background: "#000",
+                                  color,
+                                  border: "1px solid rgba(255,255,255,0.15)",
+                                }}
                               />
                             </div>
 
                             <div className="flex justify-end mt-2">
                               {saved[p.id] ? (
-                                <span className="text-green-300 text-xs font-medium">Guardado ✓</span>
+                                <span className="text-xs font-medium" style={{ color: "#3CAC3B" }}>Guardado ✓</span>
                               ) : (
                                 <button
                                   onClick={() => guardar(p.id)}
                                   disabled={saving[p.id]}
-                                  className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-3 py-1 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-green-600/30"
+                                  className="text-xs font-semibold px-3 py-1 rounded-lg transition-all duration-200 disabled:opacity-30"
+                                  style={{
+                                    background: "#D4AF37",
+                                    color: "#000",
+                                  }}
                                 >
                                   {saving[p.id] ? "Guardando..." : "Guardar"}
                                 </button>
@@ -315,7 +352,7 @@ export default function EliminatoriasClient() {
                         )}
 
                         {p.bloqueado && !p.miPronostico && (
-                          <p className="text-gray-500 text-xs text-center mt-1">Bloqueado</p>
+                          <p className="text-xs text-center mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>Bloqueado</p>
                         )}
                       </div>
                     ))}
@@ -323,7 +360,7 @@ export default function EliminatoriasClient() {
                 </div>
 
                 {idx < RONDAS.length - 1 && (
-                  <div className="hidden md:flex justify-center py-2 text-green-500/30">
+                  <div className="hidden md:flex justify-center py-2" style={{ color: "rgba(212,175,55,0.3)" }}>
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>

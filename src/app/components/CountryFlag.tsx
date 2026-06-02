@@ -14,13 +14,10 @@ export default function CountryFlag({ nombre, className = "" }: Props) {
   return (
     <span className={`inline-flex items-center gap-1 ${className}`}>
       <span
-        className="text-base leading-none"
+        className="leading-none"
         style={{ fontFamily: "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', 'EmojiOne Color', sans-serif" }}
       >
         {pais.emoji}
-      </span>
-      <span className="text-[10px] font-semibold uppercase tracking-wider text-green-400/70">
-        {pais.iso}
       </span>
     </span>
   );
