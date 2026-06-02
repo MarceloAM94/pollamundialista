@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import CountryFlag from "@/app/components/CountryFlag";
+import Skeleton from "@/app/components/Skeleton";
+import { getPais } from "@/app/lib/paises";
 
 type PronosticoData = {
   id: number;
@@ -34,6 +37,33 @@ function formatFecha(iso: string) {
     minute: "2-digit",
     timeZone: "America/Mexico_City",
   });
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <Skeleton className="h-9 w-64 mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
+              <Skeleton className="h-14 rounded-none" />
+              {Array.from({ length: 3 }).map((_, j) => (
+                <div key={j} className="p-4 border-t border-white/10">
+                  <Skeleton className="h-3 w-32 mb-2" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-5 flex-1" />
+                    <Skeleton className="h-10 w-28" />
+                    <Skeleton className="h-5 flex-1" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function FaseGruposClient() {
@@ -90,9 +120,7 @@ export default function FaseGruposClient() {
     const golesLocal = parseInt(goles[`${partidoId}-local`] ?? "", 10);
     const golesVisita = parseInt(goles[`${partidoId}-visita`] ?? "", 10);
 
-    if (isNaN(golesLocal) || isNaN(golesVisita)) {
-      return;
-    }
+    if (isNaN(golesLocal) || isNaN(golesVisita)) return;
 
     setSaving((prev) => ({ ...prev, [partidoId]: true }));
     try {
@@ -119,16 +147,10 @@ export default function FaseGruposClient() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-950 flex items-center justify-center">
-        <p className="text-white text-xl">Cargando partidos...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-950">
+    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-white mb-8">Fase de Grupos</h1>
 
@@ -152,36 +174,45 @@ export default function FaseGruposClient() {
             return (
               <div
                 key={letra}
-                className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden"
+                className="bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg shadow-green-900/30 overflow-hidden border border-white/10"
               >
-                <div className="bg-green-700/50 px-4 py-3">
+                <div className="bg-gradient-to-r from-green-700/80 to-green-800/80 px-4 py-3">
                   <h2 className="text-xl font-bold text-white">
                     Grupo {letra}
                   </h2>
-                  <p className="text-green-200 text-sm">{e.join(" · ")}</p>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {e.map((team) => (
+                      <span key={team} className="inline-flex items-center gap-1 text-green-200 text-xs">
+                        <CountryFlag nombre={team} />
+                        {team}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="divide-y divide-white/10">
                   {ps.map((p) => (
-                    <div key={p.id} className="px-4 py-3">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="text-green-200 text-xs">
-                          {formatFecha(p.fechaHora)}
+                    <div key={p.id} className="px-4 py-3 transition-colors hover:bg-white/5">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="inline-flex items-center gap-1 text-green-300 text-xs">
+                          <span>📅</span> {formatFecha(p.fechaHora)}
                         </span>
                         {p.estadio && (
-                          <span className="text-green-300 text-xs">
-                            {p.estadio}
+                          <span className="inline-flex items-center gap-1 text-green-400 text-xs">
+                            <span>🏟️</span>
+                            <span className="truncate max-w-[120px]">{p.estadio}</span>
                           </span>
                         )}
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <span className="text-white font-medium flex-1 text-right">
+                        <span className="text-white font-medium flex-1 text-right flex items-center justify-end gap-1.5">
                           {p.equipoLocal}
+                          <CountryFlag nombre={p.equipoLocal} />
                         </span>
 
                         {p.bloqueado ? (
-                          <span className="text-gray-400 text-sm px-2">
+                          <span className="text-gray-400 text-sm px-2 whitespace-nowrap font-bold">
                             {p.miPronostico
                               ? `${p.miPronostico.golesLocal} - ${p.miPronostico.golesVisita}`
                               : "vs"}
@@ -192,6 +223,7 @@ export default function FaseGruposClient() {
                               type="number"
                               min="0"
                               max="99"
+                              aria-label={`Goles ${p.equipoLocal}`}
                               value={goles[`${p.id}-local`] ?? ""}
                               onChange={(e) =>
                                 setGoles((prev) => ({
@@ -199,13 +231,14 @@ export default function FaseGruposClient() {
                                   [`${p.id}-local`]: e.target.value,
                                 }))
                               }
-                              className="w-12 h-10 text-center rounded-lg bg-white/20 text-white font-bold text-lg border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                              className="w-12 h-10 text-center rounded-lg bg-white/20 text-white font-bold text-lg border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                             />
                             <span className="text-white font-bold">-</span>
                             <input
                               type="number"
                               min="0"
                               max="99"
+                              aria-label={`Goles ${p.equipoVisita}`}
                               value={goles[`${p.id}-visita`] ?? ""}
                               onChange={(e) =>
                                 setGoles((prev) => ({
@@ -213,12 +246,13 @@ export default function FaseGruposClient() {
                                   [`${p.id}-visita`]: e.target.value,
                                 }))
                               }
-                              className="w-12 h-10 text-center rounded-lg bg-white/20 text-white font-bold text-lg border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                              className="w-12 h-10 text-center rounded-lg bg-white/20 text-white font-bold text-lg border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                             />
                           </div>
                         )}
 
-                        <span className="text-white font-medium flex-1">
+                        <span className="text-white font-medium flex-1 flex items-center gap-1.5">
+                          <CountryFlag nombre={p.equipoVisita} />
                           {p.equipoVisita}
                         </span>
                       </div>
@@ -226,9 +260,7 @@ export default function FaseGruposClient() {
                       {!p.bloqueado && (
                         <div className="mt-2 flex justify-end">
                           {saved[p.id] ? (
-                            <span className="text-green-300 text-sm font-medium">
-                              Guardado
-                            </span>
+                            <span className="text-green-300 text-sm font-medium">Guardado ✓</span>
                           ) : (
                             <button
                               onClick={() => guardar(p.id)}
@@ -237,7 +269,7 @@ export default function FaseGruposClient() {
                                 (goles[`${p.id}-local`] === undefined &&
                                   goles[`${p.id}-visita`] === undefined)
                               }
-                              className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
+                              className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-4 py-1.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-green-600/30"
                             >
                               {saving[p.id] ? "Guardando..." : "Guardar"}
                             </button>
@@ -246,9 +278,7 @@ export default function FaseGruposClient() {
                       )}
 
                       {p.bloqueado && !p.miPronostico && (
-                        <p className="text-gray-500 text-xs mt-1 text-right">
-                          Bloqueado
-                        </p>
+                        <p className="text-gray-500 text-xs mt-1 text-right">Bloqueado</p>
                       )}
                     </div>
                   ))}

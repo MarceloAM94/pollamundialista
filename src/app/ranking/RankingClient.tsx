@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Skeleton from "@/app/components/Skeleton";
 
 type RankingEntry = {
   posicion: number;
@@ -12,6 +13,30 @@ type RankingEntry = {
   diferencias: number;
   pronosticos: number;
 };
+
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <Skeleton className="h-9 w-48 mb-8" />
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
+          <Skeleton className="h-10 rounded-none" />
+          <div className="divide-y divide-white/10">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-2 px-4 py-3">
+                <Skeleton className="h-5 w-5 shrink-0" />
+                <Skeleton className="h-5 flex-1" />
+                <Skeleton className="h-5 w-8 shrink-0" />
+                <Skeleton className="h-5 w-8 shrink-0" />
+                <Skeleton className="h-5 w-8 shrink-0" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function RankingClient() {
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
@@ -41,21 +66,21 @@ export default function RankingClient() {
       .catch(() => {});
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-950 flex items-center justify-center">
-        <p className="text-white text-xl">Cargando ranking...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-950">
+    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
       <div className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-white mb-8">Ranking</h1>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
-          <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-white/10 text-xs text-green-300 font-semibold uppercase">
+        {error && (
+          <div className="bg-red-500/20 border border-red-400 text-red-200 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-green-900/30">
+          <div className="grid grid-cols-12 gap-2 px-4 py-3 border-b border-white/10 text-xs text-green-300 font-semibold uppercase tracking-wider bg-gradient-to-r from-green-800/50 to-green-900/50">
             <div className="col-span-1 text-center">#</div>
             <div className="col-span-5">Nombre</div>
             <div className="col-span-2 text-center">Pts</div>
@@ -69,8 +94,10 @@ export default function RankingClient() {
               return (
                 <div
                   key={entry.usuarioId}
-                  className={`grid grid-cols-12 gap-2 px-4 py-3 items-center ${
-                    esYo ? "bg-green-600/20" : ""
+                  className={`grid grid-cols-12 gap-2 px-4 py-3 items-center transition-colors ${
+                    esYo
+                      ? "bg-green-600/20 hover:bg-green-600/25"
+                      : "hover:bg-white/5"
                   }`}
                 >
                   <div className="col-span-1 text-center">
@@ -105,7 +132,7 @@ export default function RankingClient() {
         </div>
 
         {misPuntos !== null && (
-          <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center">
+          <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/10">
             <p className="text-green-200 text-sm">
               Tus puntos: <span className="text-white font-bold text-lg">{misPuntos}</span>
             </p>

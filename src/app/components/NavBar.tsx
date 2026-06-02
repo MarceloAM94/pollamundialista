@@ -46,13 +46,16 @@ export default function NavBar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 bg-green-900/90 backdrop-blur-md border-b border-white/10">
+    <nav
+      className="sticky top-0 z-50 backdrop-blur-md border-b border-white/10 shadow-lg shadow-green-900/30"
+      style={{ background: "var(--color-green-900)" }}
+    >
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link
           href="/dashboard"
-          className="text-white font-bold text-base tracking-tight"
+          className="text-white font-bold text-base tracking-tight flex items-center gap-1"
         >
-          🏆 Polla
+          🏆 Polla Mundialista
         </Link>
 
         <div className="flex items-center gap-1 overflow-x-auto">
@@ -62,9 +65,9 @@ export default function NavBar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                   active
-                    ? "bg-green-700 text-white"
+                    ? "bg-green-700 text-white shadow-lg shadow-green-700/30"
                     : "text-green-200 hover:text-white hover:bg-white/10"
                 }`}
               >
@@ -72,13 +75,17 @@ export default function NavBar() {
               </Link>
             );
           })}
-          <span className="text-green-400/50 mx-1">|</span>
-          <button
-            onClick={handleLogout}
-            className="text-xs text-green-300 hover:text-white transition-colors whitespace-nowrap"
-          >
-            {user.nombre}
-          </button>
+          <div className="flex items-center gap-2 ml-1 pl-2 border-l border-white/10">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-green-700/30">
+              {user.nombre.charAt(0).toUpperCase()}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-xs text-green-300 hover:text-white transition-colors whitespace-nowrap"
+            >
+              {user.nombre}
+            </button>
+          </div>
         </div>
       </div>
     </nav>

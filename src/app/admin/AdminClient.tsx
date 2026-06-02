@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import CountryFlag from "@/app/components/CountryFlag";
+import Skeleton from "@/app/components/Skeleton";
 
 type PartidoAdmin = {
   id: number;
@@ -19,12 +20,6 @@ type PartidoAdmin = {
   penalesLocal: number | null;
   penalesVisita: number | null;
   _count: { pronosticos: number };
-};
-
-type Estadisticas = {
-  totalUsuarios: number;
-  totalPartidos: number;
-  partidosConResultado: number;
 };
 
 const ESTADOS_PARTIDO = [
@@ -58,11 +53,27 @@ function nn(v: number | null | undefined): string {
   return v != null ? String(v) : "";
 }
 
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <Skeleton className="h-9 w-48 mb-8" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
+        </div>
+        <Skeleton className="h-24 rounded-2xl mb-8" />
+        <Skeleton className="h-96 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
 export default function AdminClient() {
   const router = useRouter();
   const [partidos, setPartidos] = useState<PartidoAdmin[]>([]);
   const [estadoSistema, setEstadoSistema] = useState("");
-  const [estadisticas, setEstadisticas] = useState<Estadisticas | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -91,16 +102,6 @@ export default function AdminClient() {
 
       setPartidos(partidosData.partidos);
       setEstadoSistema(configData.estadoSistema);
-
-      const total = partidosData.partidos.length as number;
-      const conResultado = partidosData.partidos.filter(
-        (p: PartidoAdmin) => p.golesLocalReal !== null
-      ).length;
-      setEstadisticas({
-        totalUsuarios: 0,
-        totalPartidos: total,
-        partidosConResultado: conResultado,
-      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al cargar");
     } finally {
@@ -215,6 +216,8 @@ export default function AdminClient() {
   }
 
   const partidosFiltrados = partidos.filter((p) => p.fase === filtroFase);
+  const totalPartidos = partidos.length;
+  const conResultado = partidos.filter((p) => p.golesLocalReal !== null).length;
 
   function setEdit(id: number, campo: string, val: string) {
     setEditando((prev) => ({
@@ -223,16 +226,10 @@ export default function AdminClient() {
     }));
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-950 flex items-center justify-center">
-        <p className="text-white text-xl">Cargando panel admin...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-950">
+    <div className="min-h-screen" style={{ background: "var(--color-green-950)" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-white mb-8">Panel Admin</h1>
 
@@ -247,29 +244,27 @@ export default function AdminClient() {
           </div>
         )}
 
-        {estadisticas && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white/10 rounded-xl p-4">
-              <div className="text-2xl font-bold text-white">{estadisticas.totalPartidos}</div>
-              <div className="text-sm text-gray-300">Partidos totales</div>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4">
-              <div className="text-2xl font-bold text-green-400">{estadisticas.partidosConResultado}</div>
-              <div className="text-sm text-gray-300">Con resultado</div>
-            </div>
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <div className="text-2xl font-bold text-white">{totalPartidos}</div>
+            <div className="text-sm text-green-300">Partidos totales</div>
           </div>
-        )}
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <div className="text-2xl font-bold text-green-400">{conResultado}</div>
+            <div className="text-sm text-green-300">Con resultado</div>
+          </div>
+        </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8">
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-white/10 shadow-lg shadow-green-900/30">
           <h2 className="text-lg font-bold text-white mb-3">Estado del Sistema</h2>
           <div className="flex flex-wrap gap-2">
             {ESTADOS_SISTEMA.map((estado) => (
               <button
                 key={estado}
                 onClick={() => cambiarEstadoSistema(estado)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   estadoSistema === estado
-                    ? "bg-green-600 text-white"
+                    ? "bg-green-600 text-white shadow-lg shadow-green-600/30"
                     : "bg-white/10 text-gray-300 hover:bg-white/20"
                 }`}
               >
@@ -279,13 +274,13 @@ export default function AdminClient() {
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 shadow-lg shadow-green-900/30">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-gradient-to-r from-green-800/50 to-green-900/50">
             <button
               onClick={() => setFiltroFase(1)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 filtroFase === 1
-                  ? "bg-green-600 text-white"
+                  ? "bg-green-600 text-white shadow-lg shadow-green-600/30"
                   : "text-gray-300 hover:bg-white/10"
               }`}
             >
@@ -293,9 +288,9 @@ export default function AdminClient() {
             </button>
             <button
               onClick={() => setFiltroFase(2)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 filtroFase === 2
-                  ? "bg-green-600 text-white"
+                  ? "bg-green-600 text-white shadow-lg shadow-green-600/30"
                   : "text-gray-300 hover:bg-white/10"
               }`}
             >
@@ -305,7 +300,7 @@ export default function AdminClient() {
 
           <div className="divide-y divide-white/10">
             {partidosFiltrados.map((p) => (
-              <div key={p.id} className="px-4 py-3">
+              <div key={p.id} className="px-4 py-3 transition-colors hover:bg-white/5">
                 <div className="flex items-center gap-2 text-xs text-gray-400 mb-1">
                   <span>#{p.id}</span>
                   {p.grupo && <span>Grupo {p.grupo}</span>}
@@ -316,7 +311,8 @@ export default function AdminClient() {
                 </div>
 
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-white font-medium w-32 text-right truncate">
+                  <span className="text-white font-medium w-28 text-right truncate flex items-center justify-end gap-1">
+                    <CountryFlag nombre={p.equipoLocal} />
                     {p.equipoLocal}
                   </span>
 
@@ -328,7 +324,7 @@ export default function AdminClient() {
                       placeholder="-"
                       value={editStr(p.id, "golesLocalReal")}
                       onChange={(e) => setEdit(p.id, "golesLocalReal", e.target.value)}
-                      className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                     <span className="text-white font-bold">-</span>
                     <input
@@ -338,9 +334,14 @@ export default function AdminClient() {
                       placeholder="-"
                       value={editStr(p.id, "golesVisitaReal")}
                       onChange={(e) => setEdit(p.id, "golesVisitaReal", e.target.value)}
-                      className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="w-12 h-9 text-center rounded-lg bg-white/20 text-white font-bold border border-white/30 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </div>
+
+                  <CountryFlag nombre={p.equipoVisita} />
+                  <span className="text-white font-medium w-28 truncate">
+                    {p.equipoVisita}
+                  </span>
 
                   {p.fase === 2 && (
                     <div className="flex items-center gap-1">
@@ -352,7 +353,7 @@ export default function AdminClient() {
                         placeholder="-"
                         value={editStr(p.id, "penalesLocal")}
                         onChange={(e) => setEdit(p.id, "penalesLocal", e.target.value)}
-                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                       <span className="text-yellow-300 font-bold text-xs">-</span>
                       <input
@@ -362,14 +363,10 @@ export default function AdminClient() {
                         placeholder="-"
                         value={editStr(p.id, "penalesVisita")}
                         onChange={(e) => setEdit(p.id, "penalesVisita", e.target.value)}
-                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        className="w-10 h-8 text-center rounded-lg bg-white/20 text-yellow-200 font-bold text-xs border border-white/30 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/50 outline-none transition-all [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       />
                     </div>
                   )}
-
-                  <span className="text-white font-medium w-32 truncate">
-                    {p.equipoVisita}
-                  </span>
 
                   <select
                     value={editStr(p.id, "estado")}
@@ -386,7 +383,7 @@ export default function AdminClient() {
                   {p.estado === "FINALIZADO" && (
                     <button
                       onClick={() => procesar(p.id)}
-                      className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
+                      className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-blue-600/30"
                     >
                       Procesar
                     </button>
@@ -394,7 +391,7 @@ export default function AdminClient() {
                   <button
                     onClick={() => guardarPartido(p.id)}
                     disabled={saving[p.id]}
-                    className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
+                    className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-3 py-1.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-green-600/30"
                   >
                     {saving[p.id] ? "..." : "Guardar"}
                   </button>
