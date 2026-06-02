@@ -49,6 +49,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // Admin routes solo para admins
+  if (pathname.startsWith("/admin") && !payload.isAdmin) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
   return NextResponse.next();
 }
 
