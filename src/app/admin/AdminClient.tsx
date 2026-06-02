@@ -63,6 +63,7 @@ export default function AdminClient() {
   const [filtroFase, setFiltroFase] = useState<number>(1);
   const [editando, setEditando] = useState<Record<number, Partial<PartidoAdmin>>>({});
   const [saving, setSaving] = useState<Record<number, boolean>>({});
+  const [procesando, setProcesando] = useState<Record<number, boolean>>({});
 
   const cargarDatos = useCallback(async () => {
     try {
@@ -151,6 +152,29 @@ export default function AdminClient() {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
       setSaving((prev) => ({ ...prev, [id]: false }));
+    }
+  }
+
+  async function procesar(id: number) {
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await fetch("/api/admin/procesar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ partidoId: id }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Error al procesar");
+      }
+
+      setSuccess(`Partido #${id} procesado`);
+      cargarDatos();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
     }
   }
 
@@ -346,6 +370,14 @@ export default function AdminClient() {
                     ))}
                   </select>
 
+                  {p.estado === "FINALIZADO" && (
+                    <button
+                      onClick={() => procesar(p.id)}
+                      className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
+                    >
+                      Procesar
+                    </button>
+                  )}
                   <button
                     onClick={() => guardarPartido(p.id)}
                     disabled={saving[p.id]}

@@ -1,13 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 type Props = {
   userName: string;
   isAdmin: boolean;
+  userPuntos: number;
 };
 
-export default function DashboardClient({ userName, isAdmin }: Props) {
+export default function DashboardClient({ userName, isAdmin, userPuntos }: Props) {
   const router = useRouter();
 
   async function handleLogout() {
@@ -48,24 +50,24 @@ export default function DashboardClient({ userName, isAdmin }: Props) {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
-            <div className="bg-white/5 rounded-xl p-6 text-white">
+            <Link href="/fase-grupos" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-colors">
               <div className="text-3xl font-bold text-green-400">72</div>
               <div className="text-sm text-green-200 mt-1">
-                Partidos F. Grupos
+                Fase de Grupos
               </div>
-            </div>
-            <div className="bg-white/5 rounded-xl p-6 text-white">
+            </Link>
+            <Link href="/ranking" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-colors">
               <div className="text-3xl font-bold text-green-400">32</div>
               <div className="text-sm text-green-200 mt-1">
-                Partidos Eliminatoria
+                Eliminatoria
               </div>
-            </div>
-            <div className="bg-white/5 rounded-xl p-6 text-white">
-              <div className="text-3xl font-bold text-green-400">0</div>
+            </Link>
+            <Link href="/ranking" className="bg-white/5 rounded-xl p-6 text-white block hover:bg-white/10 transition-colors">
+              <div className="text-3xl font-bold text-green-400">{userPuntos}</div>
               <div className="text-sm text-green-200 mt-1">
                 Tus puntos
               </div>
-            </div>
+            </Link>
           </div>
 
           <div className="mt-8 flex justify-center gap-4">
