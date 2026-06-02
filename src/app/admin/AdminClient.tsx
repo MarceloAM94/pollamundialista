@@ -107,9 +107,17 @@ export default function AdminClient() {
     cargarDatos();
   }, [cargarDatos]);
 
+  function valorInput(id: number, campo: "golesLocalReal" | "golesVisitaReal" | "estado") {
+    const partido = partidos.find((p) => p.id === id);
+    if (!partido) return undefined;
+    const edit = editando[id]?.[campo];
+    if (campo === "estado") return (edit ?? partido.estado) as string;
+    return edit !== undefined ? (edit as number | null) : partido[campo as "golesLocalReal" | "golesVisitaReal"];
+  }
+
   async function guardarPartido(id: number) {
-    const cambios = editando[id];
-    if (!cambios) return;
+    const partido = partidos.find((p) => p.id === id);
+    if (!partido) return;
 
     setSaving((prev) => ({ ...prev, [id]: true }));
     setError("");
@@ -119,7 +127,12 @@ export default function AdminClient() {
       const res = await fetch("/api/admin/partidos", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...cambios }),
+        body: JSON.stringify({
+          id,
+          golesLocalReal: valorInput(id, "golesLocalReal"),
+          golesVisitaReal: valorInput(id, "golesVisitaReal"),
+          estado: valorInput(id, "estado"),
+        }),
       });
 
       if (!res.ok) {
@@ -335,7 +348,7 @@ export default function AdminClient() {
 
                   {(editando[p.id]?.golesLocalReal !== undefined ||
                     editando[p.id]?.golesVisitaReal !== undefined ||
-                    editando[p.id]?.estado) && (
+                    editando[p.id]?.estado !== undefined) && (
                     <button
                       onClick={() => guardarPartido(p.id)}
                       disabled={saving[p.id]}
