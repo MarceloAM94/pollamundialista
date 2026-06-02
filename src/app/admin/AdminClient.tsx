@@ -301,8 +301,8 @@ export default function AdminClient() {
                       type="number"
                       min="0"
                       max="99"
-                      placeholder={p.golesLocalReal !== null ? String(p.golesLocalReal) : "-"}
-                      value={editando[p.id]?.golesLocalReal ?? ""}
+                      placeholder="-"
+                      value={editando[p.id]?.golesLocalReal !== undefined ? (editando[p.id]?.golesLocalReal ?? "") : (p.golesLocalReal ?? "")}
                       onChange={(e) =>
                         setEditValue(
                           p.id,
@@ -317,8 +317,8 @@ export default function AdminClient() {
                       type="number"
                       min="0"
                       max="99"
-                      placeholder={p.golesVisitaReal !== null ? String(p.golesVisitaReal) : "-"}
-                      value={editando[p.id]?.golesVisitaReal ?? ""}
+                      placeholder="-"
+                      value={editando[p.id]?.golesVisitaReal !== undefined ? (editando[p.id]?.golesVisitaReal ?? "") : (p.golesVisitaReal ?? "")}
                       onChange={(e) =>
                         setEditValue(
                           p.id,
@@ -346,17 +346,13 @@ export default function AdminClient() {
                     ))}
                   </select>
 
-                  {(editando[p.id]?.golesLocalReal !== undefined ||
-                    editando[p.id]?.golesVisitaReal !== undefined ||
-                    editando[p.id]?.estado !== undefined) && (
-                    <button
-                      onClick={() => guardarPartido(p.id)}
-                      disabled={saving[p.id]}
-                      className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
-                    >
-                      {saving[p.id] ? "..." : "Guardar"}
-                    </button>
-                  )}
+                  <button
+                    onClick={() => guardarPartido(p.id)}
+                    disabled={saving[p.id]}
+                    className="text-xs bg-green-600 hover:bg-green-500 disabled:opacity-40 text-white px-3 py-1.5 rounded-lg font-medium transition-colors"
+                  >
+                    {saving[p.id] ? "..." : "Guardar"}
+                  </button>
                 </div>
               </div>
             ))}

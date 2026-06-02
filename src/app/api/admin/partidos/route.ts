@@ -23,9 +23,12 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Falta id del partido" }, { status: 400 });
     }
 
+    // Si el partido vuelve a PROGRAMADO, se borra el resultado automáticamente
+    const esProgramado = estado === "PROGRAMADO";
+
     const partido = await updatePartido(id, {
-      golesLocalReal: golesLocalReal !== undefined ? golesLocalReal : undefined,
-      golesVisitaReal: golesVisitaReal !== undefined ? golesVisitaReal : undefined,
+      golesLocalReal: esProgramado ? null : golesLocalReal !== undefined ? golesLocalReal : undefined,
+      golesVisitaReal: esProgramado ? null : golesVisitaReal !== undefined ? golesVisitaReal : undefined,
       estado,
     });
 
