@@ -66,3 +66,14 @@ export async function getUserById(id: number): Promise<UserData | null> {
   if (!user || !user.activo) return null;
   return { id: user.id, username: user.username, nombre: user.nombre, isAdmin: user.isAdmin };
 }
+
+export async function getAuthenticatedUser(): Promise<UserData | null> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return null;
+  const { verifyToken } = await import("./auth");
+  const payload = await verifyToken(token);
+  if (!payload) return null;
+  return getUserById(payload.userId);
+}
