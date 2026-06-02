@@ -1,6 +1,6 @@
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import * as crypto from "node:crypto";
+import bcrypt from "bcryptjs";
 
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error("DATABASE_URL no definida");
@@ -205,8 +205,7 @@ async function main() {
   await prisma.configuracion.deleteMany();
 
   // ── Admin ──────────────────────────────────────────────────────
-  const { createHash } = await import("node:crypto");
-  const passwordHash = createHash("sha256").update(ADMIN_PASSWORD).digest("hex");
+  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
 
   const admin = await prisma.usuario.create({
     data: {
