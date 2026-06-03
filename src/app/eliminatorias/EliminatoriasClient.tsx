@@ -40,13 +40,13 @@ const RONDAS = [
 
 function formatFecha(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleDateString("es-MX", {
+  return d.toLocaleDateString("es-PE", {
     weekday: "short",
     day: "numeric",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "America/Mexico_City",
+    timeZone: "America/Lima",
   });
 }
 
