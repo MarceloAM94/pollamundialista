@@ -215,8 +215,8 @@ export default function FaseGruposClient() {
                       </div>
 
                       <div className="flex items-center gap-1.5 sm:gap-2">
-                        <span className="font-medium flex-1 text-right flex items-center justify-end gap-1 text-sm truncate" style={{ color: "#fff" }}>
-                          <span className="truncate">{p.equipoLocal}</span>
+                        <span className="font-medium flex-1 text-right flex items-center justify-end gap-1 text-sm" style={{ color: "#fff" }}>
+                          {p.equipoLocal}
                           <CountryFlag nombre={p.equipoLocal} />
                         </span>
 
@@ -274,9 +274,9 @@ export default function FaseGruposClient() {
                           </div>
                         )}
 
-                        <span className="font-medium flex-1 flex items-center gap-1 text-sm truncate" style={{ color: "#fff" }}>
+                        <span className="font-medium flex-1 flex items-center gap-1 text-sm" style={{ color: "#fff" }}>
                           <CountryFlag nombre={p.equipoVisita} />
-                          <span className="truncate">{p.equipoVisita}</span>
+                          {p.equipoVisita}
                         </span>
                       </div>
 

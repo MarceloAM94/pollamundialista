@@ -219,8 +219,8 @@ export default function EliminatoriasClient() {
                         </div>
 
                         <div className="flex items-center gap-1">
-                          <span className="font-medium flex-1 text-right text-xs sm:text-sm flex items-center justify-end gap-1 truncate" style={{ color: "#fff" }}>
-                            <span className="truncate">{p.equipoLocal}</span>
+                          <span className="font-medium flex-1 text-right text-xs sm:text-sm flex items-center justify-end gap-1" style={{ color: "#fff" }}>
+                            {p.equipoLocal}
                             <CountryFlag nombre={p.equipoLocal} />
                           </span>
 
@@ -278,9 +278,9 @@ export default function EliminatoriasClient() {
                             </div>
                           )}
 
-                          <span className="font-medium flex-1 text-xs sm:text-sm flex items-center gap-1 truncate" style={{ color: "#fff" }}>
+                          <span className="font-medium flex-1 text-xs sm:text-sm flex items-center gap-1" style={{ color: "#fff" }}>
                             <CountryFlag nombre={p.equipoVisita} />
-                            <span className="truncate">{p.equipoVisita}</span>
+                            {p.equipoVisita}
                           </span>
                         </div>
 

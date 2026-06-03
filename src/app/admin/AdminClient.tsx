@@ -316,7 +316,7 @@ export default function AdminClient() {
                   </div>
 
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="font-medium w-20 sm:w-28 text-right truncate flex items-center justify-end gap-1 text-xs sm:text-sm" style={{ color: "#fff" }}>
+                    <span className="font-medium text-right truncate flex items-center justify-end gap-1 text-xs sm:text-sm" style={{ color: "#fff", maxWidth: "min(30vw, 140px)" }}>
                       <CountryFlag nombre={p.equipoLocal} />
                       {p.equipoLocal}
                     </span>
@@ -355,7 +355,10 @@ export default function AdminClient() {
                         onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
                       />
                     </div>
-
+                    <CountryFlag nombre={p.equipoVisita} />
+                    <span className="font-medium truncate text-xs sm:text-sm" style={{ color: "#fff", maxWidth: "min(30vw, 140px)" }}>
+                      {p.equipoVisita}
+                    </span>
 
                     {p.fase === 2 && (
                       <div className="flex items-center gap-1">
