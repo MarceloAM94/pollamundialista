@@ -203,20 +203,20 @@ export default function FaseGruposClient() {
                 <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
                   {ps.map((p) => (
                     <div key={p.id} className="px-4 py-3 transition-colors hover:bg-white/[0.02]">
-                      <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-2 mb-2">
                         <span className="inline-flex items-center gap-1 text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
                           📅 {formatFecha(p.fechaHora)}
                         </span>
                         {p.estadio && (
-                          <span className="inline-flex items-center gap-1 text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                          <span className="inline-flex items-center gap-1 text-xs truncate" style={{ color: "rgba(255,255,255,0.4)" }}>
                             🏟️ {p.estadio}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium flex-1 text-right flex items-center justify-end gap-1.5 text-sm" style={{ color: "#fff" }}>
-                          {p.equipoLocal}
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <span className="font-medium flex-1 text-right flex items-center justify-end gap-1 text-sm truncate" style={{ color: "#fff" }}>
+                          <span className="truncate">{p.equipoLocal}</span>
                           <CountryFlag nombre={p.equipoLocal} />
                         </span>
 
@@ -274,9 +274,9 @@ export default function FaseGruposClient() {
                           </div>
                         )}
 
-                        <span className="font-medium flex-1 flex items-center gap-1.5 text-sm" style={{ color: "#fff" }}>
+                        <span className="font-medium flex-1 flex items-center gap-1 text-sm truncate" style={{ color: "#fff" }}>
                           <CountryFlag nombre={p.equipoVisita} />
-                          {p.equipoVisita}
+                          <span className="truncate">{p.equipoVisita}</span>
                         </span>
                       </div>
 

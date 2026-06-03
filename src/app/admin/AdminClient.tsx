@@ -316,9 +316,48 @@ export default function AdminClient() {
                   </div>
 
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="font-medium w-28 text-right truncate flex items-center justify-end gap-1 text-sm" style={{ color: "#fff" }}>
+                    <span className="font-medium w-20 sm:w-28 text-right truncate flex items-center justify-end gap-1 text-xs sm:text-sm" style={{ color: "#fff" }}>
                       <CountryFlag nombre={p.equipoLocal} />
                       {p.equipoLocal}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        placeholder="-"
+                        value={editStr(p.id, "golesLocalReal")}
+                        onChange={(e) => setEdit(p.id, "golesLocalReal", e.target.value)}
+                        className="w-10 sm:w-12 h-9 text-center font-bold outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        style={{
+                          background: "#000",
+                          color: "#fff",
+                          border: "1px solid rgba(255,255,255,0.15)",
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = color}
+                        onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+                      />
+                      <span className="font-bold" style={{ color }}>-</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        placeholder="-"
+                        value={editStr(p.id, "golesVisitaReal")}
+                        onChange={(e) => setEdit(p.id, "golesVisitaReal", e.target.value)}
+                        className="w-10 sm:w-12 h-9 text-center font-bold outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        style={{
+                          background: "#000",
+                          color: "#fff",
+                          border: "1px solid rgba(255,255,255,0.15)",
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = color}
+                        onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+                      />
+                    </div>
+                    <CountryFlag nombre={p.equipoVisita} />
+                    <span className="font-medium w-20 sm:w-28 truncate text-xs sm:text-sm" style={{ color: "#fff" }}>
+                      {p.equipoVisita}
                     </span>
 
                     <div className="flex items-center gap-1">

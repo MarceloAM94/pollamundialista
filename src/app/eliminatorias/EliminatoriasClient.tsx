@@ -207,20 +207,20 @@ export default function EliminatoriasClient() {
                         key={p.id}
                         className="px-3 py-3 transition-colors hover:bg-white/[0.02]"
                       >
-                        <div className="flex items-center justify-between gap-1 mb-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-1 mb-2">
                           <span className="text-xs flex items-center gap-1" style={{ color: "rgba(255,255,255,0.4)" }}>
                             📅 {formatFecha(p.fechaHora)}
                           </span>
                           {p.estadio && (
-                            <span className="text-xs flex items-center gap-1" style={{ color: "rgba(255,255,255,0.4)" }}>
+                            <span className="text-xs flex items-center gap-1 truncate" style={{ color: "rgba(255,255,255,0.4)" }}>
                               🏟️ {p.estadio}
                             </span>
                           )}
                         </div>
 
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-medium flex-1 text-right text-sm flex items-center justify-end gap-1" style={{ color: "#fff" }}>
-                            {p.equipoLocal}
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium flex-1 text-right text-xs sm:text-sm flex items-center justify-end gap-1 truncate" style={{ color: "#fff" }}>
+                            <span className="truncate">{p.equipoLocal}</span>
                             <CountryFlag nombre={p.equipoLocal} />
                           </span>
 
@@ -278,9 +278,9 @@ export default function EliminatoriasClient() {
                             </div>
                           )}
 
-                          <span className="font-medium flex-1 text-sm flex items-center gap-1" style={{ color: "#fff" }}>
+                          <span className="font-medium flex-1 text-xs sm:text-sm flex items-center gap-1 truncate" style={{ color: "#fff" }}>
                             <CountryFlag nombre={p.equipoVisita} />
-                            {p.equipoVisita}
+                            <span className="truncate">{p.equipoVisita}</span>
                           </span>
                         </div>
 
