@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import CountryFlag from "@/app/components/CountryFlag";
 import Skeleton from "@/app/components/Skeleton";
 import { getColorRonda } from "@/app/lib/colores";
@@ -30,12 +30,12 @@ type PartidoData = {
 };
 
 const RONDAS = [
-  { key: "dieciseisavos", label: "Dieciseisavos" },
-  { key: "octavos", label: "Octavos" },
-  { key: "cuartos", label: "Cuartos" },
-  { key: "semifinal", label: "Semifinal" },
-  { key: "tercer_puesto", label: "3er Puesto" },
-  { key: "final", label: "Final" },
+  { key: "dieciseisavos", label: "Dieciseisavos", icon: "🔵" },
+  { key: "octavos", label: "Octavos", icon: "🟡" },
+  { key: "cuartos", label: "Cuartos", icon: "🔴" },
+  { key: "semifinal", label: "Semifinal", icon: "⭐" },
+  { key: "tercer_puesto", label: "3er Puesto", icon: "🥉" },
+  { key: "final", label: "Final", icon: "🏆" },
 ];
 
 function formatFecha(iso: string) {
@@ -50,24 +50,66 @@ function formatFecha(iso: string) {
   });
 }
 
+function getNivelFase(key: string): number {
+  const map: Record<string, number> = {
+    dieciseisavos: 0,
+    octavos: 1,
+    cuartos: 2,
+    semifinal: 3,
+    tercer_puesto: 4,
+    final: 5,
+  };
+  return map[key] ?? 0;
+}
+
+// Decoración progresiva según el nivel de la fase
+function faseShadow(nivel: number, color: string): string {
+  if (nivel === 5) return `0 0 40px ${color}40, 0 0 80px ${color}20`;
+  if (nivel >= 3) return `0 0 20px ${color}30, 0 0 40px ${color}10`;
+  if (nivel >= 2) return `0 0 12px ${color}20`;
+  return "none";
+}
+
+function faseBorderWidth(nivel: number): number {
+  if (nivel >= 5) return 4;
+  if (nivel >= 3) return 3;
+  return 2;
+}
+
+function faseTitleClass(nivel: number): string {
+  if (nivel === 5) return "text-3xl md:text-4xl";
+  if (nivel >= 3) return "text-xl md:text-2xl";
+  return "text-lg";
+}
+
+function gridCols(count: number, nivel: number): string {
+  if (nivel === 5) return "flex justify-center";
+  if (nivel === 4) return "flex justify-center";
+  if (count <= 1) return "flex justify-center";
+  if (count <= 2) return "grid-cols-1 md:grid-cols-2";
+  if (count <= 4) return "grid-cols-2 md:grid-cols-4";
+  return "grid-cols-2 md:grid-cols-4";
+}
+
 function LoadingSkeleton() {
   return (
     <div style={{ background: "#000" }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Skeleton className="h-9 w-64 mb-8" />
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex flex-col gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-2xl overflow-hidden min-w-[280px]" style={{ background: "#111217" }}>
+            <div key={i} className="rounded-2xl overflow-hidden" style={{ background: "#111217" }}>
               <Skeleton className="h-12 rounded-none" />
-              <div className="divide-y divide-white/5">
-                {Array.from({ length: i < 2 ? 4 : 2 }).map((_, j) => (
-                  <div key={j} className="p-4">
-                    <Skeleton className="h-3 w-28 mb-2" />
-                    <div className="flex items-center gap-2">
-                      <Skeleton className="h-5 flex-1" />
-                      <Skeleton className="h-10 w-28" />
-                      <Skeleton className="h-5 flex-1" />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4">
+                {Array.from({ length: i < 1 ? 8 : 4 }).map((_, j) => (
+                  <div key={j} className="rounded-xl p-3" style={{ background: "rgba(255,255,255,0.03)" }}>
+                    <Skeleton className="h-3 w-20 mb-2" />
+                    <div className="flex items-center gap-1">
+                      <Skeleton className="h-4 flex-1" />
+                      <Skeleton className="h-8 w-12" />
+                      <Skeleton className="h-4 flex-1" />
                     </div>
+                    <Skeleton className="h-3 w-24 mt-2" />
                   </div>
                 ))}
               </div>
@@ -160,6 +202,13 @@ export default function EliminatoriasClient() {
     }
   }
 
+  const rondasConPartidos = useMemo(() => {
+    return RONDAS.map((r) => ({
+      ...r,
+      partidos: partidos.filter((p) => p.ronda === r.key),
+    })).filter((r) => r.partidos.length > 0);
+  }, [partidos]);
+
   if (loading) return <LoadingSkeleton />;
 
   return (
@@ -180,192 +229,263 @@ export default function EliminatoriasClient() {
           </div>
         )}
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-3 overflow-x-auto pb-4">
-          {RONDAS.map(({ key, label }, idx) => {
-            const ps = partidos.filter((p) => p.ronda === key);
-            if (ps.length === 0) return null;
+        {/* Timeline + rondas */}
+        <div className="relative flex flex-col gap-6 md:gap-8">
+          {/* Línea vertical decorativa */}
+          <div
+            className="absolute left-[23px] top-0 bottom-0 w-[2px] rounded-full"
+            style={{
+              background: "linear-gradient(to bottom, #FBE84E, #00A3E0, #E61D25, #D4AF37, #A2238E, #D4AF37)",
+              opacity: 0.4,
+            }}
+          />
+
+          {rondasConPartidos.map(({ key, label, icon, partidos: ps }, idx) => {
             const color = getColorRonda(key);
+            const nivel = getNivelFase(key);
+            const esFinal = nivel === 5;
+            const esTercer = nivel === 4;
+            const esCentrado = esFinal || esTercer;
 
             return (
-              <div key={key} className="flex-1 min-w-[280px] md:min-w-0 animate-fade-in" style={{ animationDelay: `${idx * 0.08}s` }}>
+              <div key={key} className="relative animate-fade-in" style={{ animationDelay: `${idx * 0.12}s` }}>
+                {/* Punto en la timeline */}
                 <div
-                  className="rounded-2xl overflow-hidden shadow-lg"
+                  className="absolute left-[14px] top-1.5 w-[20px] h-[20px] rounded-full border-2 z-10"
                   style={{
-                    background: "#111217",
-                    borderLeft: `4px solid ${color}`,
+                    background: "#000",
+                    borderColor: color,
+                    boxShadow: nivel >= 3 ? `0 0 10px ${color}60` : "none",
                   }}
-                >
-                  <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <h2 className="text-lg font-bold" style={{ color }}>
+                />
+
+                {/* Contenido de la fase (con margen para la timeline) */}
+                <div style={{ paddingLeft: "50px" }}>
+                  {/* Encabezado con decoración progresiva */}
+                  <div className={`flex items-center gap-3 mb-${esFinal ? "6" : "4"}`}>
+                    <span className="text-2xl" style={{ filter: nivel >= 3 ? "drop-shadow(0 0 6px rgba(212,175,55,0.4))" : "none" }}>
+                      {icon}
+                    </span>
+                    <h2
+                      className={`font-bold ${faseTitleClass(nivel)}`}
+                      style={{
+                        color,
+                        textShadow: nivel >= 4 ? `0 0 20px ${color}40` : "none",
+                      }}
+                    >
                       {label}
                     </h2>
+                    <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${color}20`, color }}>
+                      {ps.length} partido{ps.length !== 1 ? "s" : ""}
+                    </span>
                   </div>
 
-                  <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-                    {ps.map((p, matchIdx) => (
-                      <div
-                        key={p.id}
-                        className="px-3 py-3 transition-colors hover:bg-white/[0.02]"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-0.5 sm:gap-1 mb-2">
-                          <span className="text-xs flex items-center gap-1" style={{ color: "rgba(255,255,255,0.4)" }}>
-                            📅 {formatFecha(p.fechaHora)}
-                          </span>
-                          {p.estadio && (
-                            <span className="text-xs flex items-center gap-1 truncate" style={{ color: "rgba(255,255,255,0.4)" }}>
-                              🏟️ {p.estadio}
-                            </span>
-                          )}
-                        </div>
+                  {/* Grid de tarjetas individuales */}
+                  <div
+                    className={`grid gap-3 md:gap-4 ${esCentrado ? "" : gridCols(ps.length, nivel)}`}
+                    style={esCentrado ? { display: "flex", justifyContent: "center" } : {}}
+                  >
+                    {ps.map((p, matchIdx) => {
+                      const teamHasRealResult = p.golesLocalReal !== null && p.golesVisitaReal !== null;
 
-                        <div className="flex items-center gap-1">
-                          <span className="font-medium flex-1 text-right text-xs sm:text-sm flex items-center justify-end gap-1" style={{ color: "#fff" }}>
-                            {p.equipoLocal}
-                            <CountryFlag nombre={p.equipoLocal} />
-                          </span>
-
-                          {p.bloqueado ? (
-                            <span className="text-xs px-1 whitespace-nowrap font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
-                              {p.miPronostico
-                                ? `${p.miPronostico.golesLocal}-${p.miPronostico.golesVisita}${p.miPronostico.penalesLocal !== null ? ` (${p.miPronostico.penalesLocal}-${p.miPronostico.penalesVisita})` : ""}`
-                                : "vs"}
-                            </span>
-                          ) : (
-                            <div className="flex items-center gap-0.5">
-                              <input
-                                type="number"
-                                min="0"
-                                max="99"
-                                aria-label={`Goles ${p.equipoLocal}`}
-                                value={values[`${p.id}-local`] ?? ""}
-                                onChange={(e) =>
-                                  setValues((prev) => ({
-                                    ...prev,
-                                    [`${p.id}-local`]: e.target.value,
-                                  }))
-                                }
-                                className="w-10 h-9 text-center font-bold text-sm outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                                style={{
-                                  background: "#000",
-                                  color: "#fff",
-                                  border: "1px solid rgba(255,255,255,0.15)",
-                                }}
-                                onFocus={(e) => e.target.style.borderColor = color}
-                                onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-                              />
-                              <span className="font-bold text-sm" style={{ color }}>-</span>
-                              <input
-                                type="number"
-                                min="0"
-                                max="99"
-                                aria-label={`Goles ${p.equipoVisita}`}
-                                value={values[`${p.id}-visita`] ?? ""}
-                                onChange={(e) =>
-                                  setValues((prev) => ({
-                                    ...prev,
-                                    [`${p.id}-visita`]: e.target.value,
-                                  }))
-                                }
-                                className="w-10 h-9 text-center font-bold text-sm outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                                style={{
-                                  background: "#000",
-                                  color: "#fff",
-                                  border: "1px solid rgba(255,255,255,0.15)",
-                                }}
-                                onFocus={(e) => e.target.style.borderColor = color}
-                                onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
-                              />
+                      return (
+                        <div
+                          key={p.id}
+                          className={`rounded-2xl transition-all duration-300 hover:scale-[1.02] ${esFinal ? "animate-fade-in-up" : ""}`}
+                          style={{
+                            animationDelay: `${matchIdx * 0.05}s`,
+                            background: esFinal
+                              ? "linear-gradient(135deg, #1a1a20 0%, #111217 100%)"
+                              : "#111217",
+                            borderLeft: `${faseBorderWidth(nivel)}px solid ${color}`,
+                            boxShadow: faseShadow(nivel, color),
+                            maxWidth: esCentrado ? "420px" : "none",
+                            width: esCentrado ? "100%" : "auto",
+                          }}
+                        >
+                          {/* Decoración especial para la final */}
+                          {esFinal && (
+                            <div className="text-center pt-4 pb-2">
+                              <span className="text-4xl block mb-1">🏆</span>
+                              <div className="text-[10px] uppercase tracking-[0.3em]" style={{ color: "rgba(212,175,55,0.5)" }}>Gran Final</div>
                             </div>
                           )}
 
-                          <span className="font-medium flex-1 text-xs sm:text-sm flex items-center gap-1" style={{ color: "#fff" }}>
-                            <CountryFlag nombre={p.equipoVisita} />
-                            {p.equipoVisita}
-                          </span>
-                        </div>
-
-                        {!p.bloqueado && (
-                          <>
-                            <div className="flex items-center justify-center gap-2 mt-2">
-                              <span className="text-xs" style={{ color: color }}>Penales:</span>
-                              <input
-                                type="number"
-                                min="0"
-                                max="99"
-                                placeholder="L"
-                                aria-label="Penales local"
-                                value={values[`${p.id}-pen-local`] ?? ""}
-                                onChange={(e) =>
-                                  setValues((prev) => ({
-                                    ...prev,
-                                    [`${p.id}-pen-local`]: e.target.value,
-                                  }))
-                                }
-                                className="w-9 h-7 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                                style={{
-                                  background: "#000",
-                                  color,
-                                  border: "1px solid rgba(255,255,255,0.15)",
-                                }}
-                              />
-                              <span className="font-bold text-xs" style={{ color }}>-</span>
-                              <input
-                                type="number"
-                                min="0"
-                                max="99"
-                                placeholder="V"
-                                aria-label="Penales visita"
-                                value={values[`${p.id}-pen-visita`] ?? ""}
-                                onChange={(e) =>
-                                  setValues((prev) => ({
-                                    ...prev,
-                                    [`${p.id}-pen-visita`]: e.target.value,
-                                  }))
-                                }
-                                className="w-9 h-7 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                                style={{
-                                  background: "#000",
-                                  color,
-                                  border: "1px solid rgba(255,255,255,0.15)",
-                                }}
-                              />
-                            </div>
-
-                            <div className="flex justify-end mt-2">
-                              {saved[p.id] ? (
-                                <span className="text-xs font-medium" style={{ color: "#3CAC3B" }}>Guardado ✓</span>
-                              ) : (
-                                <button
-                                  onClick={() => guardar(p.id)}
-                                  disabled={saving[p.id]}
-                                  className="text-xs font-semibold px-3 py-1 rounded-lg transition-all duration-200 disabled:opacity-30"
-                                  style={{
-                                    background: "#D4AF37",
-                                    color: "#000",
-                                  }}
-                                >
-                                  {saving[p.id] ? "Guardando..." : "Guardar"}
-                                </button>
+                          <div className="p-3 md:p-4">
+                            {/* Fecha */}
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs flex items-center gap-1" style={{ color: "rgba(255,255,255,0.4)" }}>
+                                📅 {formatFecha(p.fechaHora)}
+                              </span>
+                              {p.estadio && (
+                                <span className="text-xs truncate max-w-[160px] text-right" style={{ color: "rgba(255,255,255,0.3)" }}>
+                                  🏟️ {p.estadio}
+                                </span>
                               )}
                             </div>
-                          </>
-                        )}
 
-                        {p.bloqueado && !p.miPronostico && (
-                          <p className="text-xs text-center mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>Bloqueado</p>
-                        )}
-                      </div>
-                    ))}
+                            {/* Equipos + marcador */}
+                            <div className="flex items-center gap-1">
+                              <div className="flex-1 flex items-center justify-end gap-1.5 min-w-0">
+                                <span className="font-medium text-xs sm:text-sm text-right truncate" style={{ color: "#fff" }}>
+                                  {p.equipoLocal}
+                                </span>
+                                <CountryFlag nombre={p.equipoLocal} />
+                              </div>
+
+                              {p.bloqueado ? (
+                                <span className="text-sm px-2 whitespace-nowrap font-bold" style={{ color: teamHasRealResult ? color : "rgba(255,255,255,0.4)" }}>
+                                  {p.miPronostico
+                                    ? `${p.miPronostico.golesLocal}-${p.miPronostico.golesVisita}${p.miPronostico.penalesLocal !== null ? ` (${p.miPronostico.penalesLocal}-${p.miPronostico.penalesVisita})` : ""}`
+                                    : teamHasRealResult
+                                      ? `${p.golesLocalReal}-${p.golesVisitaReal}`
+                                      : "vs"}
+                                </span>
+                              ) : (
+                                <div className="flex items-center gap-0.5">
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    max="99"
+                                    aria-label={`Goles ${p.equipoLocal}`}
+                                    value={values[`${p.id}-local`] ?? ""}
+                                    onChange={(e) =>
+                                      setValues((prev) => ({
+                                        ...prev,
+                                        [`${p.id}-local`]: e.target.value,
+                                      }))
+                                    }
+                                    className="w-9 sm:w-11 h-8 sm:h-9 text-center font-bold text-sm outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                    style={{
+                                      background: "#000",
+                                      color: "#fff",
+                                      border: "1px solid rgba(255,255,255,0.15)",
+                                    }}
+                                    onFocus={(e) => e.target.style.borderColor = color}
+                                    onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+                                  />
+                                  <span className="font-bold text-sm" style={{ color }}>-</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    max="99"
+                                    aria-label={`Goles ${p.equipoVisita}`}
+                                    value={values[`${p.id}-visita`] ?? ""}
+                                    onChange={(e) =>
+                                      setValues((prev) => ({
+                                        ...prev,
+                                        [`${p.id}-visita`]: e.target.value,
+                                      }))
+                                    }
+                                    className="w-9 sm:w-11 h-8 sm:h-9 text-center font-bold text-sm outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                    style={{
+                                      background: "#000",
+                                      color: "#fff",
+                                      border: "1px solid rgba(255,255,255,0.15)",
+                                    }}
+                                    onFocus={(e) => e.target.style.borderColor = color}
+                                    onBlur={(e) => e.target.style.borderColor = "rgba(255,255,255,0.15)"}
+                                  />
+                                </div>
+                              )}
+
+                              <div className="flex-1 flex items-center gap-1.5 min-w-0">
+                                <CountryFlag nombre={p.equipoVisita} />
+                                <span className="font-medium text-xs sm:text-sm truncate" style={{ color: "#fff" }}>
+                                  {p.equipoVisita}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Resultado real */}
+                            {teamHasRealResult && (
+                              <div className="text-center mt-1">
+                                <span className="text-[11px] font-semibold" style={{ color }}>
+                                  {p.golesLocalReal}-{p.golesVisitaReal}
+                                  {p.penalesLocal !== null && p.penalesVisita !== null
+                                    ? ` (${p.penalesLocal}-${p.penalesVisita} pen.)`
+                                    : ""}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Penales input */}
+                            {!p.bloqueado && (
+                              <>
+                                <div className="flex items-center justify-center gap-2 mt-2">
+                                  <span className="text-xs" style={{ color: color }}>Pen:</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    max="99"
+                                    placeholder="L"
+                                    aria-label="Penales local"
+                                    value={values[`${p.id}-pen-local`] ?? ""}
+                                    onChange={(e) =>
+                                      setValues((prev) => ({
+                                        ...prev,
+                                        [`${p.id}-pen-local`]: e.target.value,
+                                      }))
+                                    }
+                                    className="w-8 h-6 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                    style={{
+                                      background: "#000",
+                                      color,
+                                      border: "1px solid rgba(255,255,255,0.15)",
+                                    }}
+                                  />
+                                  <span className="font-bold text-xs" style={{ color }}>-</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    max="99"
+                                    placeholder="V"
+                                    aria-label="Penales visita"
+                                    value={values[`${p.id}-pen-visita`] ?? ""}
+                                    onChange={(e) =>
+                                      setValues((prev) => ({
+                                        ...prev,
+                                        [`${p.id}-pen-visita`]: e.target.value,
+                                      }))
+                                    }
+                                    className="w-8 h-6 text-center font-bold text-xs outline-none transition-all duration-200 rounded-lg [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                    style={{
+                                      background: "#000",
+                                      color,
+                                      border: "1px solid rgba(255,255,255,0.15)",
+                                    }}
+                                  />
+                                </div>
+
+                                <div className="flex justify-end mt-2">
+                                  {saved[p.id] ? (
+                                    <span className="text-xs font-medium" style={{ color: "#3CAC3B" }}>Guardado ✓</span>
+                                  ) : (
+                                    <button
+                                      onClick={() => guardar(p.id)}
+                                      disabled={saving[p.id]}
+                                      className="text-xs font-semibold px-3 py-1 rounded-lg transition-all duration-200 disabled:opacity-30"
+                                      style={{
+                                        background: esFinal ? "#D4AF37" : "#D4AF37",
+                                        color: "#000",
+                                      }}
+                                    >
+                                      {saving[p.id] ? "Guardando..." : "Guardar"}
+                                    </button>
+                                  )}
+                                </div>
+                              </>
+                            )}
+
+                            {p.bloqueado && !p.miPronostico && (
+                              <p className="text-xs text-center mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>Bloqueado</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-
-                {idx < RONDAS.length - 1 && (
-                  <div className="hidden md:flex justify-center py-2" style={{ color: "rgba(212,175,55,0.3)" }}>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                )}
               </div>
             );
           })}
