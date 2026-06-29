@@ -1,3 +1,6 @@
+import { config } from "dotenv";
+config({ path: ".env.local" });
+
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
@@ -169,97 +172,123 @@ const RONDAS_KO: Array<{
   fecha: string;
   estadio: string;
 }> = [
-  // DIEZISEISAVOS (R32)
+  // DIEZISEISAVOS (R32) — bracket real del Mundial 2026
   { ronda: "dieciseisavos", local: "2A", visita: "2B", fecha: "2026-06-28T19:00:00Z", estadio: "SoFi Stadium, Inglewood" },
-  { ronda: "dieciseisavos", local: "1E", visita: "3ABCDF", fecha: "2026-06-29T17:00:00Z", estadio: "Gillette Stadium, Foxborough" },
-  { ronda: "dieciseisavos", local: "1F", visita: "3ABCGH", fecha: "2026-06-29T20:00:00Z", estadio: "NRG Stadium, Houston" },
-  { ronda: "dieciseisavos", local: "1C", visita: "3DEFIJ", fecha: "2026-06-29T23:00:00Z", estadio: "Estadio BBVA, Monterrey" },
-  { ronda: "dieciseisavos", local: "1I", visita: "3CDFGH", fecha: "2026-06-30T19:00:00Z", estadio: "MetLife Stadium, East Rutherford" },
-  { ronda: "dieciseisavos", local: "2E", visita: "2F", fecha: "2026-06-30T22:00:00Z", estadio: "Estadio Akron, Guadalajara" },
-  { ronda: "dieciseisavos", local: "1A", visita: "3CEFHI", fecha: "2026-07-01T01:00:00Z", estadio: "Estadio Azteca, Cd. de México" },
-  { ronda: "dieciseisavos", local: "1L", visita: "3EHIJK", fecha: "2026-07-01T19:00:00Z", estadio: "BMO Field, Toronto" },
-  { ronda: "dieciseisavos", local: "1D", visita: "3BEFIJ", fecha: "2026-07-01T22:00:00Z", estadio: "Levi's Stadium, Santa Clara" },
-  { ronda: "dieciseisavos", local: "1G", visita: "3AEHIJ", fecha: "2026-07-02T01:00:00Z", estadio: "BC Place, Vancouver" },
-  { ronda: "dieciseisavos", local: "2K", visita: "2L", fecha: "2026-07-02T19:00:00Z", estadio: "Mercedes-Benz Stadium, Atlanta" },
-  { ronda: "dieciseisavos", local: "1H", visita: "2J", fecha: "2026-07-02T22:00:00Z", estadio: "Lumen Field, Seattle" },
-  { ronda: "dieciseisavos", local: "1B", visita: "3EFGIJ", fecha: "2026-07-03T01:00:00Z", estadio: "AT&T Stadium, Arlington" },
-  { ronda: "dieciseisavos", local: "1J", visita: "2H", fecha: "2026-07-03T19:00:00Z", estadio: "Hard Rock Stadium, Miami Gardens" },
-  { ronda: "dieciseisavos", local: "1K", visita: "3DEIJL", fecha: "2026-07-03T22:00:00Z", estadio: "Lincoln Financial Field, Philadelphia" },
-  { ronda: "dieciseisavos", local: "2C", visita: "2D", fecha: "2026-07-04T01:00:00Z", estadio: "SoFi Stadium, Inglewood" },
+  { ronda: "dieciseisavos", local: "1C", visita: "2F", fecha: "2026-06-29T17:00:00Z", estadio: "NRG Stadium, Houston" },
+  { ronda: "dieciseisavos", local: "1E", visita: "3D", fecha: "2026-06-29T20:30:00Z", estadio: "Gillette Stadium, Foxborough" },
+  { ronda: "dieciseisavos", local: "1F", visita: "2C", fecha: "2026-06-30T01:00:00Z", estadio: "Estadio BBVA, Monterrey" },
+  { ronda: "dieciseisavos", local: "2E", visita: "2I", fecha: "2026-06-30T17:00:00Z", estadio: "AT&T Stadium, Arlington" },
+  { ronda: "dieciseisavos", local: "1I", visita: "3F", fecha: "2026-06-30T21:00:00Z", estadio: "MetLife Stadium, East Rutherford" },
+  { ronda: "dieciseisavos", local: "1A", visita: "3E", fecha: "2026-07-01T01:00:00Z", estadio: "Estadio Azteca, Cd. de México" },
+  { ronda: "dieciseisavos", local: "1L", visita: "3K", fecha: "2026-07-01T16:00:00Z", estadio: "Mercedes-Benz Stadium, Atlanta" },
+  { ronda: "dieciseisavos", local: "1G", visita: "3I", fecha: "2026-07-01T20:00:00Z", estadio: "Lumen Field, Seattle" },
+  { ronda: "dieciseisavos", local: "1D", visita: "3B", fecha: "2026-07-02T00:00:00Z", estadio: "Levi's Stadium, Santa Clara" },
+  { ronda: "dieciseisavos", local: "1H", visita: "2J", fecha: "2026-07-02T19:00:00Z", estadio: "SoFi Stadium, Inglewood" },
+  { ronda: "dieciseisavos", local: "2K", visita: "2L", fecha: "2026-07-02T23:00:00Z", estadio: "BMO Field, Toronto" },
+  { ronda: "dieciseisavos", local: "1B", visita: "3J", fecha: "2026-07-03T03:00:00Z", estadio: "BC Place, Vancouver" },
+  { ronda: "dieciseisavos", local: "2D", visita: "2G", fecha: "2026-07-03T18:00:00Z", estadio: "AT&T Stadium, Arlington" },
+  { ronda: "dieciseisavos", local: "1J", visita: "2H", fecha: "2026-07-03T22:00:00Z", estadio: "Hard Rock Stadium, Miami Gardens" },
+  { ronda: "dieciseisavos", local: "1K", visita: "3L", fecha: "2026-07-04T01:30:00Z", estadio: "Arrowhead Stadium, Kansas City" },
 
   // OCTAVOS (R16)
-  { ronda: "octavos", local: "W74", visita: "W77", fecha: "2026-07-04T19:00:00Z", estadio: "NRG Stadium, Houston" },
-  { ronda: "octavos", local: "W73", visita: "W75", fecha: "2026-07-04T23:00:00Z", estadio: "MetLife Stadium, East Rutherford" },
-  { ronda: "octavos", local: "W76", visita: "W78", fecha: "2026-07-05T19:00:00Z", estadio: "Estadio Azteca, Cd. de México" },
-  { ronda: "octavos", local: "W79", visita: "W80", fecha: "2026-07-05T23:00:00Z", estadio: "SoFi Stadium, Inglewood" },
+  { ronda: "octavos", local: "W73", visita: "W75", fecha: "2026-07-04T17:00:00Z", estadio: "NRG Stadium, Houston" },
+  { ronda: "octavos", local: "W74", visita: "W77", fecha: "2026-07-04T21:00:00Z", estadio: "Lincoln Financial Field, Philadelphia" },
+  { ronda: "octavos", local: "W76", visita: "W78", fecha: "2026-07-05T20:00:00Z", estadio: "MetLife Stadium, East Rutherford" },
+  { ronda: "octavos", local: "W79", visita: "W80", fecha: "2026-07-06T00:00:00Z", estadio: "Estadio Azteca, Cd. de México" },
   { ronda: "octavos", local: "W83", visita: "W84", fecha: "2026-07-06T19:00:00Z", estadio: "AT&T Stadium, Arlington" },
-  { ronda: "octavos", local: "W81", visita: "W82", fecha: "2026-07-06T23:00:00Z", estadio: "BC Place, Vancouver" },
-  { ronda: "octavos", local: "W86", visita: "W88", fecha: "2026-07-07T19:00:00Z", estadio: "Mercedes-Benz Stadium, Atlanta" },
-  { ronda: "octavos", local: "W85", visita: "W87", fecha: "2026-07-07T23:00:00Z", estadio: "Gillette Stadium, Foxborough" },
+  { ronda: "octavos", local: "W81", visita: "W82", fecha: "2026-07-07T00:00:00Z", estadio: "Lumen Field, Seattle" },
+  { ronda: "octavos", local: "W86", visita: "W88", fecha: "2026-07-07T16:00:00Z", estadio: "Mercedes-Benz Stadium, Atlanta" },
+  { ronda: "octavos", local: "W85", visita: "W87", fecha: "2026-07-07T20:00:00Z", estadio: "BC Place, Vancouver" },
 
   // CUARTOS
-  { ronda: "cuartos", local: "W89", visita: "W90", fecha: "2026-07-09T21:00:00Z", estadio: "MetLife Stadium, East Rutherford" },
-  { ronda: "cuartos", local: "W93", visita: "W94", fecha: "2026-07-10T21:00:00Z", estadio: "SoFi Stadium, Inglewood" },
-  { ronda: "cuartos", local: "W91", visita: "W92", fecha: "2026-07-11T20:00:00Z", estadio: "AT&T Stadium, Arlington" },
-  { ronda: "cuartos", local: "W95", visita: "W96", fecha: "2026-07-12T00:00:00Z", estadio: "Mercedes-Benz Stadium, Atlanta" },
+  { ronda: "cuartos", local: "W89", visita: "W90", fecha: "2026-07-09T20:00:00Z", estadio: "Gillette Stadium, Foxborough" },
+  { ronda: "cuartos", local: "W93", visita: "W94", fecha: "2026-07-10T19:00:00Z", estadio: "SoFi Stadium, Inglewood" },
+  { ronda: "cuartos", local: "W91", visita: "W92", fecha: "2026-07-11T21:00:00Z", estadio: "Hard Rock Stadium, Miami Gardens" },
+  { ronda: "cuartos", local: "W95", visita: "W96", fecha: "2026-07-12T01:00:00Z", estadio: "Arrowhead Stadium, Kansas City" },
 
   // SEMIFINALES
-  { ronda: "semifinal", local: "W97", visita: "W98", fecha: "2026-07-14T21:00:00Z", estadio: "MetLife Stadium, East Rutherford" },
-  { ronda: "semifinal", local: "W99", visita: "W100", fecha: "2026-07-15T21:00:00Z", estadio: "AT&T Stadium, Arlington" },
+  { ronda: "semifinal", local: "W97", visita: "W98", fecha: "2026-07-14T19:00:00Z", estadio: "AT&T Stadium, Arlington" },
+  { ronda: "semifinal", local: "W99", visita: "W100", fecha: "2026-07-15T19:00:00Z", estadio: "Mercedes-Benz Stadium, Atlanta" },
 
-  // TERCER PUESTO — Sáb 18 Jul, 15:00 Peru = 20:00 UTC
-  { ronda: "tercer_puesto", local: "RU101", visita: "RU102", fecha: "2026-07-18T20:00:00Z", estadio: "SoFi Stadium, Inglewood" },
+  // TERCER PUESTO
+  { ronda: "tercer_puesto", local: "RU101", visita: "RU102", fecha: "2026-07-18T21:00:00Z", estadio: "Hard Rock Stadium, Miami Gardens" },
 
-  // FINAL — Dom 19 Jul, 14:00 Peru = 19:00 UTC
+  // FINAL
   { ronda: "final", local: "W101", visita: "W102", fecha: "2026-07-19T19:00:00Z", estadio: "MetLife Stadium, East Rutherford" },
 ];
 
 async function main() {
-  console.log("Limpiando base de datos...");
-  await prisma.pronostico.deleteMany();
-  await prisma.partido.deleteMany();
-  await prisma.usuario.deleteMany();
-  await prisma.configuracion.deleteMany();
+  // ── Usuarios admin (UPSERT: crea solo si no existen) ──
+  const adminExiste = await prisma.usuario.findUnique({ where: { username: ADMIN_USERNAME } });
+  if (!adminExiste) {
+    const ph = await bcrypt.hash(ADMIN_PASSWORD, 10);
+    await prisma.usuario.create({
+      data: { username: ADMIN_USERNAME, passwordHash: ph, nombre: "Administrador", isAdmin: true },
+    });
+    console.log(`Admin creado: ${ADMIN_USERNAME}`);
+  } else {
+    console.log(`Admin ${ADMIN_USERNAME} ya existe`);
+  }
 
-  const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
-  const admin = await prisma.usuario.create({
-    data: { username: ADMIN_USERNAME, passwordHash, nombre: "Administrador", isAdmin: true },
-  });
-  console.log(`Admin creado: ${admin.username}`);
+  const gabrieliExiste = await prisma.usuario.findUnique({ where: { username: "GabrieliSCmo" } });
+  if (!gabrieliExiste) {
+    const ph = await bcrypt.hash("123456", 10);
+    await prisma.usuario.create({
+      data: { username: "GabrieliSCmo", passwordHash: ph, nombre: "Gabrieli", isAdmin: true },
+    });
+    console.log("Admin creado: GabrieliSCmo");
+  } else {
+    console.log("Admin GabrieliSCmo ya existe");
+  }
 
-  await prisma.configuracion.create({
-    data: { clave: "estado_sistema", valor: SYSTEM_STATE },
+  // ── Configuración (UPSERT) ──
+  await prisma.configuracion.upsert({
+    where: { clave: "estado_sistema" },
+    update: { valor: SYSTEM_STATE },
+    create: { clave: "estado_sistema", valor: SYSTEM_STATE },
   });
   console.log(`Estado del sistema: ${SYSTEM_STATE}`);
 
-  let contador = 0;
-  for (const [grupo, local, visita, fecha, estadio] of PARTIDOS_F1) {
-    await prisma.partido.create({
-      data: {
-        fase: 1, ronda: "grupos", grupo,
-        equipoLocal: local, equipoVisita: visita,
-        fechaHora: new Date(fecha), estadio,
-        estado: "PROGRAMADO",
-      },
-    });
-    contador++;
+  // ── Partidos de fase de grupos (solo si no existen) ──
+  const gruposExistentes = await prisma.partido.count({ where: { fase: 1 } });
+  if (gruposExistentes === 0) {
+    let contador = 0;
+    for (const [grupo, local, visita, fecha, estadio] of PARTIDOS_F1) {
+      await prisma.partido.create({
+        data: {
+          fase: 1, ronda: "grupos", grupo,
+          equipoLocal: local, equipoVisita: visita,
+          fechaHora: new Date(fecha), estadio,
+          estado: "PROGRAMADO",
+        },
+      });
+      contador++;
+    }
+    console.log(`${contador} partidos de fase de grupos creados`);
+  } else {
+    console.log(`${gruposExistentes} partidos de fase de grupos ya existen, saltando creación`);
   }
-  console.log(`${contador} partidos de fase de grupos creados`);
 
-  let contadorKo = 0;
-  for (const ko of RONDAS_KO) {
-    await prisma.partido.create({
-      data: {
-        fase: 2, ronda: ko.ronda, grupo: null,
-        equipoLocal: ko.local, equipoVisita: ko.visita,
-        fechaHora: new Date(ko.fecha), estadio: ko.estadio,
-        estado: "PROGRAMADO",
-      },
-    });
-    contadorKo++;
+  // ── Partidos de eliminatorias (solo si no existen) ──
+  const koExistentes = await prisma.partido.count({ where: { fase: 2 } });
+  if (koExistentes === 0) {
+    let contadorKo = 0;
+    for (const ko of RONDAS_KO) {
+      await prisma.partido.create({
+        data: {
+          fase: 2, ronda: ko.ronda, grupo: null,
+          equipoLocal: ko.local, equipoVisita: ko.visita,
+          fechaHora: new Date(ko.fecha), estadio: ko.estadio,
+          estado: "PROGRAMADO",
+        },
+      });
+      contadorKo++;
+    }
+    console.log(`${contadorKo} partidos de fase eliminatoria creados`);
+    console.log(`Total: ${contadorKo + gruposExistentes} partidos`);
+  } else {
+    console.log(`${koExistentes} partidos de fase eliminatoria ya existen, saltando creación`);
   }
-  console.log(`${contadorKo} partidos de fase eliminatoria creados`);
-  console.log(`Total: ${contador + contadorKo} partidos`);
 }
 
 main()

@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { resolverRondaSiguiente } from "./resolver-eliminatorias";
 
 export async function procesarPartido(partidoId: number) {
   const partido = await prisma.partido.findUnique({
@@ -43,6 +44,9 @@ export async function procesarPartido(partidoId: number) {
     where: { id: partidoId },
     data: { estado: "PROCESADO" },
   });
+
+  // Auto-resolver rondas siguientes si es eliminatoria
+  await resolverRondaSiguiente(partidoId);
 
   return { procesados: partido.pronosticos.length };
 }

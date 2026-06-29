@@ -192,6 +192,30 @@ export default function AdminClient() {
     }
   }
 
+    const [resolving, setResolving] = useState(false);
+
+  async function resolverEliminatorias() {
+    if (!confirm("¿Generar eliminatorias? Esto reemplazará los placeholders (1A, 2B, W73, etc.) con los nombres reales de los equipos según los resultados de la fase de grupos.")) return;
+    setError("");
+    setSuccess("");
+    setResolving(true);
+
+    try {
+      const res = await fetch("/api/admin/resolver", { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Error al resolver");
+      }
+      const data = await res.json();
+      setSuccess(`Dieciseisavos generados: ${data.actualizados} partidos actualizados. 3ros clasificados: ${data.tercerosClasificados?.join(", ")}`);
+      cargarDatos();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally {
+      setResolving(false);
+    }
+  }
+
   async function cambiarEstadoSistema(estado: string) {
     if (!confirm(`¿Cambiar estado del sistema a "${estado.replace(/_/g, " ")}"?`)) return;
     setError("");
@@ -264,7 +288,17 @@ export default function AdminClient() {
         </div>
 
         <div className="rounded-2xl p-6 mb-8 shadow-lg" style={{ background: "#111217", border: "1px solid rgba(212,175,55,0.15)" }}>
-          <h2 className="text-lg font-bold mb-3" style={{ color: "#D4AF37" }}>Estado del Sistema</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold" style={{ color: "#D4AF37" }}>Estado del Sistema</h2>
+            <button
+              onClick={resolverEliminatorias}
+              disabled={resolving}
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 disabled:opacity-40"
+              style={{ background: "#E61D25", color: "#fff" }}
+            >
+              {resolving ? "Resolviendo..." : "Generar eliminatorias"}
+            </button>
+          </div>
           <div className="flex flex-wrap gap-2">
             {ESTADOS_SISTEMA.map((estado) => (
               <button

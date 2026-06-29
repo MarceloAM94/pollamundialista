@@ -30,7 +30,7 @@ model Usuario {
   nombre       String
   isAdmin      Boolean     @default(false)
   activo       Boolean     @default(true)
-  createdAt    DateTime    @default(now())
+  createdAt    DateTime    @default(now()) @db.Timestamptz(3)
   pronosticos  Pronostico[]
 }
 
@@ -41,7 +41,7 @@ model Partido {
   grupo           String?        // ej. "A", "B", null si es mata-mata
   equipoLocal     String         // nombre de selección
   equipoVisita    String
-  fechaHora       DateTime       // en UTC
+  fechaHora       DateTime       @db.Timestamptz(3) // en UTC
   estadio         String?
   estado          EstadoPartido  @default(PROGRAMADO)
   golesLocalReal  Int?
@@ -60,8 +60,8 @@ model Pronostico {
   penalesLocal  Int?
   penalesVisita Int?
   puntos        Int?     // se llena al procesar: 0, 1 o 3
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
 
   usuario Usuario @relation(fields: [usuarioId], references: [id])
   partido Partido @relation(fields: [partidoId], references: [id])
